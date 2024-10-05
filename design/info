@@ -4,7 +4,7 @@
   "name": "pcb",
   "content": "",
   "created_at": "2024-10-03 21:00:51",
-  "updated_at": "2024-10-04 06:02:32",
+  "updated_at": "2024-10-05 01:39:51",
   "stick": "",
   "documents": [
     {
@@ -28,7 +28,7 @@
         "7382d3430ac33afa692ac64e0c785da8": 2,
         "00a256a42639438bb31cb3107c5004dc": 2,
         "d4a844d81a8421ba55bf9bbe0176c427": 1,
-        "78fe267f503241ca8c0020c43cac50df": 4,
+        "78fe267f503241ca8c0020c43cac50df": 5,
         "ac7e91d5ff684999932b47ca086b8f32": 1,
         "4839e600161745f1af0afe53dafb495c": 1,
         "3ef0845c1cf84df2bef87344f5ab9a63": 12,
@@ -273,11 +273,11 @@
           }
         ]
       ],
-      "updateTime": 1728014552,
+      "updateTime": 1728084481,
       "createTime": 1727985682,
       "histories": [],
       "created_at": "2024-10-03 22:01:22",
-      "updated_at": "2024-10-04 06:02:32"
+      "updated_at": "2024-10-05 01:28:01"
     },
     {
       "uuid": "ff37516d4f2fe8aa09c92a16154eb146",
@@ -547,6 +547,9 @@
       "master": "",
       "thumb": "/images/thumb-default.png",
       "components": {
+        "c8ff49fd52d243fc97fd1d41aae000dd": 12,
+        "17412ae1dd56412bab5905641ae023e4": 1,
+        "c9380a0e636941afa91a2225a0df6ffd": 1,
         "8e9b1be4bcb6420dbd1d09bf04b02792": 1,
         "7335dfa67b564d7988d09a073a20aa42": 1,
         "09952c2799c54b76904e264324ada8f3": 1,
@@ -560,10 +563,7 @@
         "398691f1f785460098bbe5ee6590333c": 2,
         "e6b180e1316a4d0690f78b72797504c2": 1,
         "677825848b7d446da6dbcbc9fcf306ca": 1,
-        "6200581e048848138c6a279857b8523f": 1,
-        "c8ff49fd52d243fc97fd1d41aae000dd": 12,
-        "17412ae1dd56412bab5905641ae023e4": 1,
-        "c9380a0e636941afa91a2225a0df6ffd": 1
+        "6200581e048848138c6a279857b8523f": 1
       },
       "BOM": [
         [
@@ -790,16 +790,16 @@
           }
         ]
       ],
-      "updateTime": 1728014026,
+      "updateTime": 1728085191,
       "createTime": 1727999082,
       "histories": [],
       "created_at": "2024-10-04 01:44:42",
-      "updated_at": "2024-10-04 05:53:46"
+      "updated_at": "2024-10-05 01:39:51"
     }
   ],
   "sort": [],
   "title": "pcb",
   "foldername": "pcb",
   "schfilename": "pcb.json",
-  "schfilemtime": 1728014552146
+  "schfilemtime": 1728084481542
 }
