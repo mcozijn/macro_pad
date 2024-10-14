@@ -1,3 +1,4 @@
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +17,7 @@ enum {
    BLINK_MOUNTED = 1000,
    BLINK_SUSPENDED = 2500,
 };
+typedef int8_t (*get_key_fn)(void);
 
 void led_blinking_task();
-void hid_task();
+void hid_task(get_key_fn get_key);

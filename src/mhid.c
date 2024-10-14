@@ -1,4 +1,6 @@
-#include "hid.h"
+#include "mhid.h"
+
+#include "config.h"
 
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
@@ -11,12 +13,11 @@ static void send_hid_report(uint8_t report_id, uint32_t btn) {
 
          if (btn) {
             uint8_t keycode[6] = {0};
-            keycode[0] = HID_KEY_A;
-
+            keycode[0] = btn;
+            // keycode[0] = keymap[(btn - 1) % MATRIX_ROWS][(btn - 1) / MATRIX_ROWS];
             tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
             has_keyboard_key = true;
          } else {
-
             if (has_keyboard_key) tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
             has_keyboard_key = false;
          }
@@ -54,21 +55,21 @@ void led_blinking_task() {
 
    if (!blink_interval_ms) return;
 
-   if (board_millis() - start_ms < blink_interval_ms) return;  
+   if (board_millis() - start_ms < blink_interval_ms) return;
    start_ms += blink_interval_ms;
 
    board_led_write(led_state);
    led_state = 1 - led_state;
 }
 
-void hid_task() {
+void hid_task(get_key_fn get_key) {
    const uint32_t interval_ms = 10;
    static uint32_t start_ms = 0;
 
    if (board_millis() - start_ms < interval_ms) return;
    start_ms += interval_ms;
 
-   uint32_t const btn = board_button_read();
+   uint32_t const btn = get_key();
 
    if (tud_suspended() && btn) {
       tud_remote_wakeup();
@@ -77,13 +78,4 @@ void hid_task() {
    }
 }
 
-uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t* buffer, uint16_t reqlen) {
-   // TODO not Implemented
-   (void)instance;
-   (void)report_id;
-   (void)report_type;
-   (void)buffer;
-   (void)reqlen;
-
-   return 0;
-}
+uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id, hid_report_type_t report_type, uint8_t* buffer, uint16_t reqlen) { return 0; }
