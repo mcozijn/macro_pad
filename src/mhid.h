@@ -18,6 +18,7 @@ enum {
    BLINK_SUSPENDED = 2500,
 };
 typedef int8_t (*get_key_fn)(void);
+typedef int8_t (*get_enc_fn)(void);
 
 void led_blinking_task();
-void hid_task(get_key_fn get_key);
+void hid_task(get_key_fn get_key, get_enc_fn get_enc);

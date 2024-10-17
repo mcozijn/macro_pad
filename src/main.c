@@ -1,7 +1,7 @@
 #include "config.h"
+#include "encoder.h"
 #include "mhid.h"
 #include "pico/stdlib.h"
-#include "encoder.h"
 
 void setup_kb_gpio() {
    for (uint8_t i = 0; i < MATRIX_COLS; i++) {
@@ -22,7 +22,7 @@ int8_t scan_matrix() {
       sleep_us(1);
       for (uint8_t j = 0; j < MATRIX_COLS; j++) {
          if (gpio_get(col_pins[j]) == 0) {
-            key = (key == 0) ? keymap[i][MATRIX_COLS - j - 1] : -1;
+            key = (key == 0) ? (int8_t)keymap[i][MATRIX_COLS - j - 1] : -1;
          }
       }
       gpio_put(row_pins[i], 1);
@@ -41,6 +41,17 @@ int8_t get_key() {
    return key;
 }
 
+int8_t get_enc() {
+   if (get_enc_pos_diff() > 0) {
+      return INCREMENT;  // increment
+   } else if (get_enc_pos_diff() < 0) {
+      return DECREMENT;  // decrement
+   } else if (get_enc_btn_state()) {
+      return BUTTON;  // button
+   }
+   return NONE;
+}
+
 int main() {
    board_init();
    tud_init(BOARD_TUD_RHPORT);
@@ -53,6 +64,6 @@ int main() {
    while (1) {
       tud_task();  // tinyusb device task
       led_blinking_task();
-      hid_task(get_key);
+      hid_task(get_key, get_enc);
    }
 }

@@ -28,6 +28,8 @@ pico_enable_stdio_usb(macro_pad 1)
 target_link_libraries(macro_pad
         pico_stdlib pico_unique_id tinyusb_device tinyusb_board)
 
+target_compile_options(macro_pad PRIVATE -Wall -Wextra -Wconversion -Werror=conversion)
+
 
 target_include_directories(macro_pad PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}
