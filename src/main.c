@@ -1,8 +1,9 @@
 #include "config.h"
 #include "mhid.h"
 #include "pico/stdlib.h"
+#include "encoder.h"
 
-void setup_gpio() {
+void setup_kb_gpio() {
    for (uint8_t i = 0; i < MATRIX_COLS; i++) {
       gpio_init(col_pins[i]);
       gpio_set_dir(col_pins[i], GPIO_IN);
@@ -32,7 +33,7 @@ int8_t scan_matrix() {
 int8_t get_key() {
    int8_t key = -1;
    uint32_t start = to_ms_since_boot(get_absolute_time());
-   while (to_ms_since_boot(get_absolute_time()) - start < 10) {
+   while (to_ms_since_boot(get_absolute_time()) - start < DEBOUNCE_DELAY) {
       if (key != scan_matrix()) {
          key = scan_matrix();
       }
@@ -47,7 +48,8 @@ int main() {
    if (board_init_after_tusb) {
       board_init_after_tusb();
    }
-   setup_gpio();
+   setup_kb_gpio();
+   setup_enc_gpio();
    while (1) {
       tud_task();  // tinyusb device task
       led_blinking_task();

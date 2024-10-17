@@ -14,7 +14,6 @@ static void send_hid_report(uint8_t report_id, uint32_t btn) {
          if (btn) {
             uint8_t keycode[6] = {0};
             keycode[0] = btn;
-            // keycode[0] = keymap[(btn - 1) % MATRIX_ROWS][(btn - 1) / MATRIX_ROWS];
             tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
             has_keyboard_key = true;
          } else {

@@ -1,0 +1,13 @@
+#pragma once
+
+#include <pico/stdlib.h>
+#include <hardware/sync.h>
+#include <hardware/gpio.h>
+#include "config.h"
+
+#define ENC_S_A (1 << ENC_A) // signal on pin A
+#define ENC_S_B (1 << ENC_B) // signal on pin B
+#define ENC_S_BOTH (ENC_S_A | ENC_S_B) // signal on both pins
+#define ENC_S_ALL (ENC_S_A | ENC_S_B | (1 << ENC_BTN)) // signal on all pins
+
+void setup_enc_gpio();

@@ -14,6 +14,7 @@ add_executable(macro_pad
     main.c
     mhid.c 
     usb_descriptors.c
+    encoder.c
 )
 
 pico_set_program_name(macro_pad "macro_pad")

@@ -3,8 +3,14 @@
 
 #include "tusb.h"
 
+#define DEBOUNCE_DELAY 10
+
 #define MATRIX_ROWS 4
 #define MATRIX_COLS 3
+
+#define ENC_A 0
+#define ENC_B 1
+#define ENC_BTN 2
 
 static const int8_t col_pins[MATRIX_COLS] = {3, 4, 5};
 static const int8_t row_pins[MATRIX_ROWS] = {6, 7, 8, 9};
