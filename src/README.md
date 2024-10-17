@@ -1,9 +1,9 @@
 ## Development setup
-`sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib` - apt
+`sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib picotool` - apt
 
 Arch:
 `sudo pacman -Syy cmake`
-`yay -S arm-none-eabi-gcc arm-none-eabi-newlib libstdc++-arm-none-eabi-newlib` or yaourt or whatever the fuck Mihai is using
+`yay -S arm-none-eabi-gcc arm-none-eabi-newlib libstdc++-arm-none-eabi-newlib picotool` or yaourt or whatever the fuck Mihai is using
 
 
 Then,
