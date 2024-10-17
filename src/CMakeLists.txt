@@ -8,13 +8,12 @@ project(macro_pad)
 # initialize the Raspberry Pi Pico SDK
 pico_sdk_init()
 
-# ADD HERE 
-
+# Add the library sources from the lib/ folder
 add_executable(macro_pad
-    main.c
-    mhid.c 
-    usb_descriptors.c
-    encoder.c
+    main.c               # main.c stays in the root directory
+    lib/mhid.c           # moved to lib/
+    lib/usb_descriptors.c # moved to lib/
+    lib/encoder.c        # moved to lib/
 )
 
 pico_set_program_name(macro_pad "macro_pad")
@@ -30,10 +29,11 @@ target_link_libraries(macro_pad
 
 target_compile_options(macro_pad PRIVATE -Wall -Wextra -Wconversion -Werror=conversion)
 
-
+# Update the include directories
 target_include_directories(macro_pad PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}
-  ${CMAKE_CURRENT_LIST_DIR}/..
+  ${CMAKE_CURRENT_LIST_DIR}/lib  # Include the new lib/ folder
+  ${CMAKE_CURRENT_LIST_DIR}/.. 
 )
 
 pico_add_extra_outputs(macro_pad)
