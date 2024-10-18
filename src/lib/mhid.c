@@ -88,7 +88,7 @@ void led_blinking_task() {
    led_state = 1 - led_state;
 }
 
-void hid_task(get_key_fn get_key, get_enc_fn get_enc) {
+void hid_task(get_key_fn get_key, get_enc_fn get_enc, set_dpy_fn set_dpy) {
    const uint32_t interval_ms = 10;
    static uint32_t start_ms = 0;
 
@@ -102,6 +102,7 @@ void hid_task(get_key_fn get_key, get_enc_fn get_enc) {
       tud_remote_wakeup();
    } else {
       send_hid_report(REPORT_ID_KEYBOARD, btn);
+      set_dpy((int8_t)btn);
       send_hid_report(REPORT_ID_CONSUMER_CONTROL, enc);
    }
 }

@@ -1,10 +1,10 @@
 #include "config.h"
 #include "encoder.h"
+#include "hardware/i2c.h"
+#include "hid_helpers.h"
 #include "mhid.h"
 #include "pico/stdlib.h"
-#include "hardware/i2c.h"
 #include "ssd1306.h"
-#include "hid_helpers.h"
 #include "tusb.h"
 
 #define SCREEN_SDA 14
@@ -65,16 +65,26 @@ int8_t get_key() {
 }
 
 int8_t get_enc() {
-   if (get_enc_pos_diff() > 0) {
-      return INCREMENT;  // increment
-   } else if (get_enc_pos_diff() < 0) {
-      return DECREMENT;  // decrement
-   } else if (get_enc_btn_state()) {
-      return BUTTON;  // button
-   }
-   return NONE;
+    if (get_enc_pos_diff() > 0) {
+        return INCREMENT;  // increment
+    } else if (get_enc_pos_diff() < 0) {
+        return DECREMENT;  // decrement
+    } else if (get_enc_btn_state()) {
+        return BUTTON;  // button
+    }
+    return NONE;
 }
 
+void set_dpy(int8_t keycode) {
+    if (keycode == -1) return;
+    char ch = keycode_to_char((char)keycode, false);
+    if (ch) {
+        ssd1306_clear(&oled_display);
+        char str[2] = {ch, '\0'};
+        ssd1306_draw_string(&oled_display, 0, 0, 7, str);
+        ssd1306_show(&oled_display);
+    }
+}
 
 int main() {
     board_init();
@@ -96,21 +106,6 @@ int main() {
 
     while (1) {
         tud_task();
-        hid_task(get_key, get_enc);
-
-        int8_t key = get_key();
-        if (key != -1) {
-
-            char ch = keycode_to_char((char)key, false);
-
-            if (ch) {
-                ssd1306_clear(&oled_display);
-                char str[2] = {ch, '\0'};
-                ssd1306_draw_string(&oled_display, 0, 0, 7, str);
-                ssd1306_show(&oled_display);
-            } 
-        }
-
-        sleep_ms(50);
+        hid_task(get_key, get_enc, set_dpy);
     }
 }
