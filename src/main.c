@@ -7,13 +7,9 @@
 #include "ssd1306.h"
 #include "tusb.h"
 
-#define SCREEN_SDA 14
-#define SCREEN_SCL 15
-
 ssd1306_t oled_display;
 int8_t encoder_pos = 0;
 int8_t last_encoder_pos = 0;
-#define I2C_INSTANCE i2c1
 
 void setup_i2c() {
     i2c_init(I2C_INSTANCE, 400 * 1000);
