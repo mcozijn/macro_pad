@@ -78,9 +78,6 @@ uint8_t const * tud_descriptor_device_cb(void)
 uint8_t const desc_hid_report[] =
 {
   TUD_HID_REPORT_DESC_KEYBOARD( HID_REPORT_ID(REPORT_ID_KEYBOARD         )),
-  TUD_HID_REPORT_DESC_MOUSE   ( HID_REPORT_ID(REPORT_ID_MOUSE            )),
-  TUD_HID_REPORT_DESC_CONSUMER( HID_REPORT_ID(REPORT_ID_CONSUMER_CONTROL )),
-  TUD_HID_REPORT_DESC_GAMEPAD ( HID_REPORT_ID(REPORT_ID_GAMEPAD          ))
 };
 
 // Invoked when received GET HID REPORT DESCRIPTOR
@@ -189,10 +186,10 @@ enum {
 // array of pointer to string descriptors
 char const *string_desc_arr[] =
 {
-  (const char[]) { 0x09, 0x04 }, // 0: is supported language is English (0x0409)
-  "TinyUSB",                     // 1: Manufacturer
-  "TinyUSB Device",              // 2: Product
-  NULL,                          // 3: Serials will use unique ID if possible
+  (const char[]) { 0x09, 0x04 },    // 0: is supported language is English (0x0409)
+  "CircuitRee",                     // 1: Manufacturer
+  "Macro Pad",                      // 2: Product
+  NULL,                             // 3: Serials will use unique ID if possible
 };
 
 static uint16_t _desc_str[32 + 1];
@@ -238,3 +235,4 @@ uint16_t const *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
 
   return _desc_str;
 }
+
