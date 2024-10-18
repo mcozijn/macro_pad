@@ -12,7 +12,7 @@ int8_t encoder_pos = 0;
 int8_t last_encoder_pos = 0;
 
 void setup_i2c() {
-    i2c_init(I2C_INSTANCE, 400 * 1000);
+    i2c_init(I2C_INSTANCE(1), 400 * 1000);
     gpio_set_function(SCREEN_SDA, GPIO_FUNC_I2C);
     gpio_set_function(SCREEN_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(SCREEN_SDA);
@@ -92,7 +92,7 @@ int main() {
 
     // Display setup
     setup_i2c();
-    ssd1306_init(&oled_display, 128, 64, 0x3C, I2C_INSTANCE);
+    ssd1306_init(&oled_display, 128, 64, 0x3C, I2C_INSTANCE(1));
     ssd1306_clear(&oled_display);
     ssd1306_show(&oled_display);
 

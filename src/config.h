@@ -15,7 +15,6 @@
 
 #define SCREEN_SDA 14
 #define SCREEN_SCL 15
-#define I2C_INSTANCE i2c1
 
 
 static const uint col_pins[MATRIX_COLS] = {3, 4, 5};
