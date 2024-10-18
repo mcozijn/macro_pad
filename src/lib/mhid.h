@@ -21,5 +21,4 @@ typedef int8_t (*get_key_fn)(void);
 typedef int8_t (*get_enc_fn)(void);
 typedef void (*set_dpy_fn)(int8_t keycode);
 
-void led_blinking_task();
 void hid_task(get_key_fn get_key, get_enc_fn get_enc, set_dpy_fn set_dpy);
