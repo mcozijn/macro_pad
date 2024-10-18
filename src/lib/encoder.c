@@ -10,7 +10,9 @@ void enc_a_irq(uint gpio, uint32_t events) {
     uint32_t irq_status = save_and_disable_interrupts();
     uint32_t curr_mask = gpio_get_all() & ENC_S_BOTH;
     if ((curr_mask == 0x00) && enc_a_state) {
-        enc_pos = (enc_pos < 1) ?: enc_pos - 1;
+        if (enc_pos > 0) {
+            enc_pos--;
+        }
         enc_a_state = 0;
         enc_b_state = 0;
     } else if (curr_mask == ENC_S_B) {
@@ -23,7 +25,9 @@ void enc_b_irq(uint gpio, uint32_t events) {
     uint32_t irq_status = save_and_disable_interrupts();
     uint32_t curr_mask = gpio_get_all() & ENC_S_BOTH;
     if ((curr_mask == 0x00) && enc_b_state) {
-        enc_pos = (enc_pos > (ENC_STEPS - 1)) ?: enc_pos + 1;
+        if (enc_pos < (ENC_STEPS - 1)) {
+            enc_pos++;
+        }
         enc_a_state = 0;
         enc_b_state = 0;
     } else if (curr_mask == ENC_S_A) {
