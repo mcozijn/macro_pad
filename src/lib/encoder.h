@@ -13,10 +13,10 @@
 #define ENC_STEPS 255
 
 enum {
-   NONE,
+   NONE = -1,
    INCREMENT,
    BUTTON,
-   DECREMENT = -1,
+   DECREMENT
 };
 
 void setup_enc_gpio();
