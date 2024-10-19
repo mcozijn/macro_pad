@@ -33,4 +33,4 @@ typedef struct encoder_controls_ {
    uint16_t button;
 } encoder_controls;
 
-static const encoder_controls encoder = {HID_USAGE_CONSUMER_VOLUME_DECREMENT, HID_USAGE_CONSUMER_VOLUME_INCREMENT, HID_USAGE_CONSUMER_PLAY_PAUSE};
+static const encoder_controls encoder = {HID_USAGE_CONSUMER_VOLUME_INCREMENT, HID_USAGE_CONSUMER_VOLUME_DECREMENT, HID_USAGE_CONSUMER_PLAY_PAUSE};

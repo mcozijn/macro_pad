@@ -94,10 +94,7 @@ void hid_task(get_key_fn get_key, get_enc_fn get_enc, set_dpy_fn set_dpy) {
         tud_remote_wakeup();
     } else {
         send_hid_report(REPORT_ID_KEYBOARD, btn);
-
-        if (enc != NONE) {
-            send_hid_report(REPORT_ID_CONSUMER_CONTROL, enc);
-        }
+        send_hid_report(REPORT_ID_CONSUMER_CONTROL, enc);
 
         set_dpy((int8_t)btn);
     }
