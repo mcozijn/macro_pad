@@ -17,8 +17,6 @@ static void send_hid_report(uint8_t report_id, int32_t btn) {
                 uint8_t keycode[6] = {0};
                 keycode[0] = (uint8_t)btn;
                 tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, keycode);
-                // uint16_t temp = HID_USAGE_CONSUMER_VOLUME_DECREMENT;
-                // tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &temp, sizeof(uint16_t));
                 has_keyboard_key = true;
             } else {
                 if (has_keyboard_key) tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
