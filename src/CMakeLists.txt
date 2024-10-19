@@ -41,6 +41,7 @@ target_link_libraries(macro_pad
     pico_stdlib
     pico_unique_id
     hardware_i2c
+    hardware_gpio
     tinyusb_device
     tinyusb_board
 )
