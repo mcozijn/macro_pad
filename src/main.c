@@ -69,7 +69,6 @@ int8_t get_enc() {
         return BUTTON;  // button
     }
     return NONE;
-    // return INCREMENT;
 }
 
 void set_dpy(int8_t keycode) {

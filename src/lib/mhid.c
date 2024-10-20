@@ -90,12 +90,11 @@ void hid_task(get_key_fn get_key, get_enc_fn get_enc, set_dpy_fn set_dpy) {
     int32_t const btn = get_key();
     int32_t const enc = get_enc();
 
-    if (tud_suspended() && (btn || enc)) {
+    if (tud_suspended() && (btn != 1 || enc != 1)) {
         tud_remote_wakeup();
     } else {
         send_hid_report(REPORT_ID_KEYBOARD, btn);
         send_hid_report(REPORT_ID_CONSUMER_CONTROL, enc);
-
         set_dpy((int8_t)btn);
     }
 }
