@@ -1,13 +1,8 @@
 #include "hid_helpers.h"
 
-#include <string.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include "pico/stdlib.h"
-
 // Initialize the mapping arrays using the macros from "tusb.h"
-uint8_t const ascii_to_keycode[128][2] = { HID_ASCII_TO_KEYCODE };
-uint8_t const keycode_to_ascii[128][2] = { HID_KEYCODE_TO_ASCII };
+uint8_t const ascii_to_keycode[128][2] = {HID_ASCII_TO_KEYCODE};
+uint8_t const keycode_to_ascii[128][2] = {HID_KEYCODE_TO_ASCII};
 
 /**
  * @brief Convert an ASCII character to HID keycode and modifier.
@@ -17,7 +12,7 @@ uint8_t const keycode_to_ascii[128][2] = { HID_KEYCODE_TO_ASCII };
  * @param modifier Pointer to store the HID modifier (e.g., shift).
  * @return true if successful, false if character is unsupported.
  */
-bool char_to_keycode(char chr, uint8_t *keycode, uint8_t *modifier) { 
+bool char_to_keycode(char chr, uint8_t *keycode, uint8_t *modifier) {
     uint8_t chr_uint = (uint8_t)chr;
 
     // Check if the character is within the valid ASCII range

@@ -4,7 +4,7 @@ volatile uint8_t enc_a_state = 0;
 volatile uint8_t enc_b_state = 0;
 volatile uint8_t enc_pos = 0;
 volatile uint8_t old_enc_pos = 0;
-volatile uint8_t enc_btn_state = 0;
+volatile bool enc_btn_state = 0;
 
 void enc_irq(uint gpio, uint32_t events) {
     uint32_t irq_status = save_and_disable_interrupts();
@@ -26,7 +26,7 @@ void enc_irq(uint gpio, uint32_t events) {
             }
             break;
         case ENC_BTN:
-            enc_btn_state = (events & GPIO_IRQ_EDGE_FALL) ?: 0;
+            enc_btn_state = (events & GPIO_IRQ_EDGE_FALL) ?: false;
             break;
     }
     restore_interrupts(irq_status);
@@ -49,6 +49,6 @@ int8_t get_enc_pos_diff() {
     return (int8_t)(enc_pos - tmp);
 }
 
-uint8_t get_enc_btn_state() {
+bool get_enc_btn_state() {
     return enc_btn_state;
 }

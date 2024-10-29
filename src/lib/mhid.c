@@ -1,8 +1,5 @@
 #include "mhid.h"
 
-#include "config.h"
-#include "encoder.h"
-
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
 static void send_hid_report(uint8_t report_id, int32_t btn) {
@@ -28,23 +25,8 @@ static void send_hid_report(uint8_t report_id, int32_t btn) {
             // Avoid sending multiple consecutive zero reports
             static bool has_consumer_key = false;
 
-            uint16_t usage_code = 0;
-
-            switch (btn) {
-                case DECREMENT:
-                    usage_code = encoder.decrement;
-                    break;
-                case INCREMENT:
-                    usage_code = encoder.increment;
-                    break;
-                case BUTTON:
-                    usage_code = encoder.button;
-                    break;
-                default:
-                    break;
-            }
-
-            if (usage_code != 0) {
+            if (btn > 0) {
+                uint16_t usage_code = (uint16_t)btn;
                 tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &usage_code, sizeof(usage_code));
                 has_consumer_key = true;
             } else {
@@ -80,27 +62,32 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id,
     }
 }
 
-void hid_task(get_key_fn get_key, get_enc_fn get_enc, set_dpy_fn set_dpy) {
+void hid_task(run_hid_options options) {
     const uint32_t interval_ms = 10;
     static uint32_t start_ms = 0;
 
     if (board_millis() - start_ms < interval_ms) return;
     start_ms += interval_ms;
 
-    int32_t const btn = get_key();
-    int32_t const enc = get_enc();
+    int32_t const btn = (options.get_key) ? options.get_key() : -1;
+    int32_t const enc = (options.get_enc) ? options.get_enc() : -1;
 
     if (tud_suspended() && (btn != 1 || enc != 1)) {
         tud_remote_wakeup();
     } else {
         send_hid_report(REPORT_ID_KEYBOARD, btn);
         send_hid_report(REPORT_ID_CONSUMER_CONTROL, enc);
-        set_dpy((int8_t)btn);
+        (options.set_dpy) ? options.set_dpy((int8_t)btn) : 0;
     }
 }
 
 uint16_t tud_hid_get_report_cb(uint8_t instance, uint8_t report_id,
                                hid_report_type_t report_type, uint8_t* buffer,
                                uint16_t reqlen) {
+    (void)instance;
+    (void)report_id;
+    (void)report_type;
+    (void)buffer;
+    (void)reqlen;
     return 0;
 }

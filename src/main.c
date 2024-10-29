@@ -1,17 +1,15 @@
+#include <hardware/i2c.h>
+#include <pico/stdlib.h>
+
 #include "config.h"
 #include "encoder.h"
-#include "hardware/i2c.h"
 #include "hid_helpers.h"
 #include "mhid.h"
-#include "pico/stdlib.h"
 #include "ssd1306.h"
-#include "tusb.h"
 
-ssd1306_t oled_display;
-int8_t encoder_pos = 0;
-int8_t last_encoder_pos = 0;
+static ssd1306_t oled_display;
 
-void setup_i2c() {
+static void setup_i2c() {
     i2c_init(I2C_INSTANCE(1), 400 * 1000);
     gpio_set_function(SCREEN_SDA, GPIO_FUNC_I2C);
     gpio_set_function(SCREEN_SCL, GPIO_FUNC_I2C);
@@ -19,7 +17,7 @@ void setup_i2c() {
     gpio_pull_up(SCREEN_SCL);
 }
 
-void setup_kb_gpio() {
+static void setup_kb_gpio() {
     for (uint8_t i = 0; i < MATRIX_COLS; i++) {
         gpio_init(col_pins[i]);
         gpio_set_dir(col_pins[i], GPIO_IN);
@@ -32,7 +30,7 @@ void setup_kb_gpio() {
     }
 }
 
-int8_t scan_matrix() {
+static int8_t scan_matrix() {
     int8_t key = 0;
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
         gpio_put(row_pins[i], 0);
@@ -47,7 +45,7 @@ int8_t scan_matrix() {
     return key;
 }
 
-int8_t get_key() {
+static int8_t get_key() {
     int8_t key = -1;
     uint32_t start = to_ms_since_boot(get_absolute_time());
     while (to_ms_since_boot(get_absolute_time()) - start < DEBOUNCE_DELAY) {
@@ -60,18 +58,18 @@ int8_t get_key() {
     return key;
 }
 
-int8_t get_enc() {
+static int32_t get_enc() {
     if (get_enc_pos_diff() > 0) {
-        return INCREMENT;  // increment
+        return encoder.increment;  // increment
     } else if (get_enc_pos_diff() < 0) {
-        return DECREMENT;  // decrement
+        return encoder.decrement;  // decrement
     } else if (get_enc_btn_state()) {
-        return BUTTON;  // button
+        return encoder.button;  // button
     }
-    return NONE;
+    return -1;
 }
 
-void set_dpy(int8_t keycode) {
+static void set_dpy(int8_t keycode) {
     if (keycode == -1) return;
     char ch = keycode_to_char((char)keycode, false);
     if (ch) {
@@ -102,6 +100,6 @@ int main() {
 
     while (1) {
         tud_task();
-        hid_task(get_key, get_enc, set_dpy);
+        run_hid(.get_key = get_key, .get_enc = get_enc, .set_dpy = set_dpy);
     }
 }

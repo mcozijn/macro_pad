@@ -1,7 +1,5 @@
 #pragma once
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <pico/stdlib.h>
 
 #include "bsp/board_api.h"
 #include "tusb.h"
@@ -13,12 +11,26 @@
  * - 2500 ms : device is suspended
  */
 enum {
-   BLINK_NOT_MOUNTED = 250,
-   BLINK_MOUNTED = 1000,
-   BLINK_SUSPENDED = 2500,
+    BLINK_NOT_MOUNTED = 250,
+    BLINK_MOUNTED = 1000,
+    BLINK_SUSPENDED = 2500,
 };
+
 typedef int8_t (*get_key_fn)(void);
-typedef int8_t (*get_enc_fn)(void);
+typedef int32_t (*get_enc_fn)(void);
 typedef void (*set_dpy_fn)(int8_t keycode);
 
-void hid_task(get_key_fn get_key, get_enc_fn get_enc, set_dpy_fn set_dpy);
+typedef struct run_hid_options {
+    get_key_fn get_key;
+    get_enc_fn get_enc;
+    set_dpy_fn set_dpy;
+} run_hid_options;
+
+#define run_hid(...)            \
+    hid_task((run_hid_options){ \
+        .get_key = NULL,        \
+        .get_enc = NULL,        \
+        .set_dpy = NULL,        \
+        __VA_ARGS__})
+
+void hid_task(run_hid_options options);
