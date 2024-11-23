@@ -9,22 +9,31 @@ volatile bool enc_btn_state = 0;
 void enc_irq(uint gpio, uint32_t events) {
     uint32_t irq_status = save_and_disable_interrupts();
     switch (gpio) {
+        // rotation
         case ENC_A ... ENC_B:
             uint32_t curr_mask = gpio_get_all() & ENC_S_BOTH;
+
+            // if we get a low pulse and a or b are high
             if ((curr_mask == 0x00) && (enc_a_state || enc_b_state)) {
-                if (enc_a_state && enc_pos > 0) {
-                    enc_pos--;
-                } else if (enc_b_state && enc_pos < (ENC_STEPS - 1)) {
+                if (enc_a_state) {
                     enc_pos++;
+                } else if (enc_b_state) {
+                    enc_pos--;
                 }
                 enc_a_state = 0;
                 enc_b_state = 0;
+
+            // else if we get a high a
             } else if (curr_mask == ENC_S_A) {
                 enc_a_state = 1;
+
+            // else if we get a high b
             } else if (curr_mask == ENC_S_B) {
                 enc_b_state = 1;
             }
             break;
+
+        // button
         case ENC_BTN:
             enc_btn_state = (events & GPIO_IRQ_EDGE_FALL) ?: false;
             break;

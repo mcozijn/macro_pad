@@ -59,9 +59,10 @@ static int8_t get_key() {
 }
 
 static int32_t get_enc() {
-    if (get_enc_pos_diff() > 0) {
+    int8_t diff = get_enc_pos_diff();
+    if (diff > 0) {
         return encoder.increment;  // increment
-    } else if (get_enc_pos_diff() < 0) {
+    } else if (diff < 0) {
         return encoder.decrement;  // decrement
     } else if (get_enc_btn_state()) {
         return encoder.button;  // button
