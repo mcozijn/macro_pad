@@ -45,6 +45,7 @@ static int8_t scan_matrix() {
     return key;
 }
 
+// todo: make the debounce work by storing the last time in an array and checking against that
 static int8_t get_key() {
     int8_t key = -1;
     uint32_t start = to_ms_since_boot(get_absolute_time());
