@@ -24,7 +24,7 @@ void enc_irq(uint gpio, uint32_t events) {
 void handle_enc_spin(uint32_t mask) {
     // if any of the pins are up
     if (mask & ENC_BOTH_MASK) {
-        enc_direction = mask;
+        enc_direction = mask & ENC_BOTH_MASK;
 
     // else, if we have a direction
     } else if (enc_direction) {

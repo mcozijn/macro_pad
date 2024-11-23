@@ -28,9 +28,6 @@ typedef struct run_hid_options {
 
 #define run_hid(...)            \
     hid_task((run_hid_options){ \
-        .get_key = NULL,        \
-        .get_enc = NULL,        \
-        .set_dpy = NULL,        \
         __VA_ARGS__})
 
 void hid_task(run_hid_options options);
