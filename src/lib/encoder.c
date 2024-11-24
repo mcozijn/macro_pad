@@ -22,14 +22,8 @@ static PIO pio = pio0;
 static volatile bool enc_btn_state = 0;
 
 #ifdef ENC_USE_STATE_MACHINE
-void enc_irq(uint gpio, uint32_t events) {
-    uint32_t irq_status = save_and_disable_interrupts();
 
-    uint8_t pstate = (gpio_get(ENC_LEFT) << 1) | gpio_get(ENC_RIGHT);
-    state = sm[state & 0xf][pstate];
 
-    restore_interrupts(irq_status);
-}
 
 inline int8_t get_enc_pos_diff() {
     uint8_t pstate = (gpio_get(ENC_LEFT) << 1) | gpio_get(ENC_RIGHT);
@@ -94,10 +88,15 @@ static inline int32_t quadrature_encoder_get_count(PIO pio, uint sm) {
     }
     return ret;
 }
-
+void enc_irq(uint gpio, uint32_t events);
 inline void setup_enc() {
     pio_add_program(pio, &quadrature_encoder_program);
     quadrature_encoder_program_init(pio, ENC_SM_ADDR, ENC_PIN_AB, 0);
+    gpio_init(ENC_BTN);
+    gpio_set_dir(ENC_BTN, GPIO_IN);
+    gpio_pull_up(ENC_BTN);
+    gpio_set_irq_enabled_with_callback(ENC_BTN, GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE, true, &enc_irq);
+
 }
 
 int8_t get_enc_pos_diff() {
@@ -116,4 +115,8 @@ int8_t get_enc_pos_diff() {
 
 bool get_enc_btn_state() {
     return enc_btn_state;
+}
+
+void enc_irq(uint gpio, uint32_t events) {
+    enc_btn_state = (events & GPIO_IRQ_EDGE_FALL) ?: false;
 }
