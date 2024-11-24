@@ -63,21 +63,16 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id,
 }
 
 void hid_task(run_hid_options options) {
-    const uint32_t interval_ms = 10;
-    static uint32_t start_ms = 0;
+    
+    int32_t const btn = options.get_key ? options.get_key() : -1;
+    int32_t const enc = options.get_enc ? options.get_enc() : -1;
 
-    if (board_millis() - start_ms < interval_ms) return;
-    start_ms += interval_ms;
-
-    int32_t const btn = (options.get_key) ? options.get_key() : -1;
-    int32_t const enc = (options.get_enc) ? options.get_enc() : -1;
-
-    if (tud_suspended() && (btn != 1 || enc != 1)) {
+    if (tud_suspended() && (btn != -1 || enc != -1)) {
         tud_remote_wakeup();
     } else {
         send_hid_report(REPORT_ID_KEYBOARD, btn);
         send_hid_report(REPORT_ID_CONSUMER_CONTROL, enc);
-        (options.set_dpy) ? options.set_dpy((int8_t)btn) : 0;
+        if (options.set_dpy) options.set_dpy((int8_t)btn);
     }
 }
 

@@ -1,13 +1,16 @@
 #include <hardware/i2c.h>
+#include <hardware/pio.h>
 #include <pico/stdlib.h>
 
 #include "config.h"
 #include "encoder.h"
+#include "hardware/timer.h"
 #include "hid_helpers.h"
 #include "mhid.h"
 #include "ssd1306.h"
 
 static ssd1306_t oled_display;
+volatile int8_t diff;
 
 static void setup_i2c() {
     i2c_init(I2C_INSTANCE(1), 400 * 1000);
@@ -30,7 +33,7 @@ static void setup_kb_gpio() {
     }
 }
 
-static int8_t scan_matrix() {
+static inline int8_t scan_matrix() {
     int8_t key = 0;
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
         gpio_put(row_pins[i], 0);
@@ -46,7 +49,7 @@ static int8_t scan_matrix() {
 }
 
 // todo: make the debounce work by storing the last time in an array and checking against that
-static int8_t get_key() {
+static inline int8_t get_key() {
     int8_t key = -1;
     uint32_t start = to_ms_since_boot(get_absolute_time());
     while (to_ms_since_boot(get_absolute_time()) - start < DEBOUNCE_DELAY) {
@@ -59,19 +62,7 @@ static int8_t get_key() {
     return key;
 }
 
-static int32_t get_enc() {
-    int8_t diff = get_enc_pos_diff();
-    if (diff > 0) {
-        return encoder.increment;  // increment
-    } else if (diff < 0) {
-        return encoder.decrement;  // decrement
-    } else if (get_enc_btn_state()) {
-        return encoder.button;  // button
-    }
-    return -1;
-}
-
-static void set_dpy(int8_t keycode) {
+static inline void set_dpy(int8_t keycode) {
     if (keycode == -1) return;
     char ch = keycode_to_char((char)keycode, false);
     if (ch) {
@@ -80,6 +71,23 @@ static void set_dpy(int8_t keycode) {
         ssd1306_draw_string(&oled_display, 0, 0, 7, str);
         ssd1306_show(&oled_display);
     }
+}
+
+static inline int32_t get_enc() {
+    int8_t diff = get_enc_pos_diff();
+    // char str[10];
+    // sprintf(str, "%d", diff);
+    // ssd1306_clear(&oled_display);
+    // ssd1306_draw_string(&oled_display, 0, 0, 7, str);
+    // ssd1306_show(&oled_display);
+    if (diff > 0) {
+        return encoder.increment;  // increment
+    } else if (diff < 0) {
+        return encoder.decrement;  // decrement
+    } else if (get_enc_btn_state()) {
+        return encoder.button;  // button
+    }
+    return -1;
 }
 
 int main() {
@@ -96,12 +104,12 @@ int main() {
     ssd1306_clear(&oled_display);
     ssd1306_show(&oled_display);
 
-    // Keyboard and encoder setup
+    // // Keyboard and encoder setup
     setup_kb_gpio();
-    setup_enc_gpio();
+    setup_enc();
 
     while (1) {
         tud_task();
-        run_hid(.get_key = get_key, .get_enc = get_enc, .set_dpy = set_dpy);
+        run_hid(.get_key = get_key, .set_dpy = set_dpy, .get_enc = get_enc);
     }
 }

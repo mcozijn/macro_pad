@@ -26,6 +26,8 @@ pico_set_program_version(macro_pad "0.1")
 pico_enable_stdio_uart(macro_pad 0)
 pico_enable_stdio_usb(macro_pad 1)
 
+pico_generate_pio_header(macro_pad ${CMAKE_CURRENT_LIST_DIR}/lib/qenc.pio)
+
 # Update the include directories to point to the lib folder and the root folder
 target_include_directories(macro_pad PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}
@@ -44,10 +46,12 @@ target_link_libraries(macro_pad
     hardware_gpio
     tinyusb_device
     tinyusb_board
+    pico_multicore
+    hardware_pio
 )
 
 # Set additional compile options if needed
-target_compile_options(macro_pad PRIVATE -Wall -Wextra -Wconversion -Werror=conversion)
+target_compile_options(macro_pad PRIVATE -Wall -Wextra -Wconversion)
 
 # Generate UF2, bin, and hex files
 pico_add_extra_outputs(macro_pad)
