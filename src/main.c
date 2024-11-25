@@ -113,6 +113,6 @@ int main() {
 
     while (1) {
         tud_task();
-        int busy = run_hid(.get_key = get_key, .set_dpy = set_dpy, .get_enc = get_enc);
+        run_hid(.get_key = get_key, .set_dpy = set_dpy, .get_enc = get_enc);
     }
 }
