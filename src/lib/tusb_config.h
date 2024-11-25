@@ -64,6 +64,7 @@
 // Enable Device stack
 #define CFG_TUD_ENABLED       1
 
+
 // Default is max speed that hardware controller could support with on-chip PHY
 #define CFG_TUD_MAX_SPEED     BOARD_TUD_MAX_SPEED
 
@@ -98,7 +99,7 @@
 #define CFG_TUD_VENDOR            0
 
 // HID buffer size Should be sufficient to hold ID (if any) + Data
-#define CFG_TUD_HID_EP_BUFSIZE    16
+#define CFG_TUD_HID_EP_BUFSIZE    64
 
 // CDC buffer size  
 #define CFG_TUD_CDC_TX_BUFSIZE    64

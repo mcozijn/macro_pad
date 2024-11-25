@@ -1,5 +1,6 @@
 #include <hardware/i2c.h>
 #include <hardware/pio.h>
+#include <pico/multicore.h>
 #include <pico/stdlib.h>
 
 #include "config.h"
@@ -10,7 +11,6 @@
 #include "ssd1306.h"
 
 static ssd1306_t oled_display;
-volatile int8_t diff;
 
 static void setup_i2c() {
     i2c_init(I2C_INSTANCE(1), 400 * 1000);
@@ -74,15 +74,18 @@ static inline void set_dpy(int8_t keycode) {
 }
 
 static inline int32_t get_enc() {
-    int8_t diff = get_enc_pos_diff();
+    // print diff
     // char str[10];
-    // sprintf(str, "%d", diff);
+    // snprintf(str, 10, "%d", diff);
     // ssd1306_clear(&oled_display);
-    // ssd1306_draw_string(&oled_display, 0, 0, 7, str);
+    // ssd1306_draw_string(&oled_display, 0, 0, 1, str);
     // ssd1306_show(&oled_display);
+    int8_t diff = get_enc_pos_diff();
     if (diff > 0) {
+        diff = 0;
         return encoder.increment;  // increment
     } else if (diff < 0) {
+        diff = 0;
         return encoder.decrement;  // decrement
     } else if (get_enc_btn_state()) {
         return encoder.button;  // button
@@ -104,12 +107,12 @@ int main() {
     ssd1306_clear(&oled_display);
     ssd1306_show(&oled_display);
 
-    // // Keyboard and encoder setup
+    // Keyboard and encoder setup
     setup_kb_gpio();
     setup_enc();
 
     while (1) {
         tud_task();
-        run_hid(.get_key = get_key, .set_dpy = set_dpy, .get_enc = get_enc);
+        int busy = run_hid(.get_key = get_key, .set_dpy = set_dpy, .get_enc = get_enc);
     }
 }

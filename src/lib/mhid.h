@@ -30,4 +30,4 @@ typedef struct run_hid_options {
     hid_task((run_hid_options){ \
         __VA_ARGS__})
 
-void hid_task(run_hid_options options);
+int8_t hid_task(run_hid_options options);
