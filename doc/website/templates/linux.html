@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Linux and macOS
+{% endblock %}
+
+{% block doc %}
+Linux and macOS
+{% endblock %}
+
+{% block content %}
+
+<div class="setup-container">
+    <div class="setup-column">
+        <img src="{{ url_for('static', filename='img/tux.png') }}" alt="Linux">
+        <h2>Linux Development Setup</h2>
+        <h3>Debian-based Systems:</h3>
+        <pre><code>sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib picotoo git</code></pre>
+        
+        <h3>Arch-based Systems:</h3>
+        <pre><code>sudo pacman -Syy cmake</code></pre>
+        <pre><code>yay -S arm-none-eabi-gcc arm-none-eabi-newlib libstdc++-arm-none-eabi-newlib picotool</code></pre>
+        <p>or use your favorite AUR helper.</p>
+    </div>
+
+    <div class="setup-column">
+        <img src="{{ url_for('static', filename='img/apple.png') }}" alt="macOS">
+        <h2>macOS Development Setup</h2>
+        <h3>Install Homebrew:</h3>
+        <pre><code>/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</code></pre>
+        
+        <h3>Install Dependencies:</h3>
+        <pre><code>brew install cmake arm-none-eabi-gcc libnewlib picotool git</code></pre>
+
+        <h3 style="color: var(--carrot-orange)">Note: This hasn't been tested, we don't have Macs. Call us over when doing it.</h3>
+    </div>
+</div>
+
+<h2>Next Steps</h2>
+
+<h3>Pull the latest updates:</h3>
+<pre><code>git clone https://github.com/CircuitReeRUG/macro_pad.git</code></pre>
+<pre><code>git pull --recurse-submodules --jobs=10</code></pre>
+
+<h3>Build the project:</h3>
+<p>When it's time to build the project, run the following command:</p>
+<pre><code>./build.sh</code></pre>
+<p>Then, upload it using:</p>
+<pre><code>./upload.sh</code></pre>
+
+{% endblock %}
