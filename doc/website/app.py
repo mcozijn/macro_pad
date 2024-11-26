@@ -3,7 +3,7 @@ from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode='gevent')
+socketio = SocketIO(app, async_mode='gevent', cors_allowed_origins='*')
 CORS(app, resources={r"/*": {"origins": "https://chippy.confest.im"}})
 
 LINUX_USERS = 0
