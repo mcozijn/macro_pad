@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_socketio import SocketIO, emit
-from gevent import monkey
+from flask_cors import CORS
 
 app = Flask(__name__)
 socketio = SocketIO(app, async_mode='gevent')
+CORS(app, resources={r"/*": {"origins": "https://chippy.confest.im"}})
 
 LINUX_USERS = 0
 WINDOWS_USERS = 0
