@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block doc %}
+Home
+{% endblock %}
+
+{% block content %}
+<div class="os-selection">
+    <div class="os-images">
+        <!-- Linux Selection -->
+        <form action="{{ url_for('select_os') }}" method="post">
+            <input type="hidden" name="os" value="linux">
+            <button type="submit" class="os-button">
+                <img src="{{ url_for('static', filename='img/tux.png') }}" alt="Linux">
+            </button>
+        </form>
+        <!-- Mac Selection -->
+        <form action="{{ url_for('select_os') }}" method="post">
+            <input type="hidden" name="os" value="mac">
+            <button type="submit" class="os-button">
+                <img src="{{ url_for('static', filename='img/apple.png') }}" alt="Mac">
+            </button>
+        </form>
+        <!-- Windows Selection -->
+        <form action="{{ url_for('select_os') }}" method="post">
+            <input type="hidden" name="os" value="windows">
+            <button type="submit" class="os-button">
+                <img src="{{ url_for('static', filename='img/windows.png') }}" alt="Windows">
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

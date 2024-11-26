@@ -138,3 +138,55 @@ footer {
   background-color: var(--white);
   transition: outline 0.3s ease, background-color 0.3s ease;
 }
+
+.os-selection {
+    text-align: center;
+    /* vertical centering */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 70vh;
+}
+
+.os-selection h2 {
+    margin-bottom: 30px;
+}
+
+.os-images {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+
+.os-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.os-button img {
+    width: 300px;
+    height: auto;
+    transition: transform 0.2s;
+}
+
+.os-button img:hover {
+    transform: scale(1.1);
+}
+
+.user-counts {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-counts img {
+    width: 24px;
+    height: auto;
+}
+
+.user-counts span {
+    font-weight: bold;
+    margin-right: 20px;
+}
