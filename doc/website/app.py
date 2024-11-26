@@ -21,7 +21,7 @@ def linux():
 def windows():
     return render_template('windows.html', linux_users=LINUX_USERS, windows_users=WINDOWS_USERS, mac_users=MAC_USERS)
 
-@app.route('/select_os', methods=['POST'])
+@app.route('/tracker', methods=['POST'])
 def select_os():
     global LINUX_USERS, WINDOWS_USERS, MAC_USERS
     selected_os = request.form.get('os')
