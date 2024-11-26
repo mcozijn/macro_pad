@@ -16,7 +16,14 @@
             <img src="{{ url_for('static', filename='img/chippy.png') }}" alt="Logo">
         </div>
         <div class="nav">
-            <a href="#">{% block doc %} Documentation {% endblock %}</a>
+            <div class="user-counts">
+                <img src="{{ url_for('static', filename='img/tux.png') }}" alt="Linux" title="Linux Users">
+                <span>{{ linux_users }}</span>
+                <img src="{{ url_for('static', filename='img/apple.png') }}" alt="Mac" title="Mac Users">
+                <span>{{ mac_users }}</span>
+                <img src="{{ url_for('static', filename='img/windows.png') }}" alt="Windows" title="Windows Users">
+                <span>{{ windows_users }}</span>
+            </div>
             {% block nav %}
             {% endblock %}
         </div>
