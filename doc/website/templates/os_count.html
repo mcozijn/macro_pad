@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OS User Counts - Live Update</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='os.css') }}">
+</head>
+<body>
+    <div class="counts-container">
+        <div class="counts">
+            <div class="count-item">
+                <img src="{{ url_for('static', filename='img/tux.png') }}" alt="Linux" title="Linux Users">
+                <span id="linux-count">9999999999999999999999</span>
+            </div>
+            <div class="count-item">
+                <img src="{{ url_for('static', filename='img/apple.png') }}" alt="Mac" title="Mac Users">
+                <span id="mac-count">-1</span>
+            </div>
+            <div class="count-item">
+                <img src="{{ url_for('static', filename='img/windows.png') }}" alt="Windows" title="Windows Users">
+                <span id="windows-count">-1</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chippy Character -->
+    <div class="chippy-container">
+        <span class="count">1</span>
+        <img src="{{ url_for('static', filename='img/chippy.png') }}" alt="Chippy">
+    </div>
+
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
+    <script>
+        var socket = io();
+
+        socket.on('connect', function() {
+            console.log('Connected to server via Socket.IO');
+        });
+
+        socket.on('update_counts', function(data) {
+            document.getElementById('linux-count').textContent = data.linux_users;
+            document.getElementById('mac-count').textContent = data.mac_users;
+            document.getElementById('windows-count').textContent = data.windows_users;
+        });
+
+        socket.emit('request_counts');
+
+        socket.on('initial_counts', function(data) {
+            document.getElementById('linux-count').textContent = data.linux_users;
+            document.getElementById('mac-count').textContent = data.mac_users;
+            document.getElementById('windows-count').textContent = data.windows_users;
+        });
+    </script>
+</body>
+</html>
