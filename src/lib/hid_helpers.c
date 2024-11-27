@@ -1,4 +1,5 @@
 #include "hid_helpers.h"
+#include "mhid.h"
 
 // Initialize the mapping arrays using the macros from "tusb.h"
 uint8_t const ascii_to_keycode[128][2] = {HID_ASCII_TO_KEYCODE};
