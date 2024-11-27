@@ -47,3 +47,15 @@ char keycode_to_char(uint8_t keycode, bool shift) {
     if (keycode >= 128) return 0;
     return keycode_to_ascii[keycode][shift ? 1 : 0];
 }
+
+/**
+ * @brief Send a sequence of keycodes to the host.
+ * 
+ * @param report_id The report ID to use.
+ * @param modifier The modifier byte.
+ * @param keycodes The array of keycodes to send.
+ */
+
+void send_keycodes(uint8_t report_id, uint8_t modifier, uint8_t keycodes[6]) {
+    tud_hid_keyboard_report(report_id, modifier, keycodes);
+}
