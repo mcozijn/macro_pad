@@ -33,33 +33,48 @@ static void setup_kb_gpio() {
     }
 }
 
-static inline int8_t scan_matrix() {
-    int8_t key = 0;
+static inline void scan_matrix(int8_t *arr, int8_t *cnt) {
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
         gpio_put(row_pins[i], 0);
         sleep_us(1);
         for (uint8_t j = 0; j < MATRIX_COLS; j++) {
-            if (gpio_get(col_pins[j]) == 0) {
-                key = (key == 0) ? (int8_t)keymap[i][MATRIX_COLS - j - 1] : -1;
+            if (gpio_get(col_pins[j]) == 0 && *cnt < 2) {
+                arr[*cnt] = (int8_t)(i * MATRIX_COLS + j);
+                (*cnt)++;
             }
         }
         gpio_put(row_pins[i], 1);
     }
-    return key;
+}
+
+static inline hid_report parse_keys(int8_t keys[2], int8_t cnt) {
+    hid_report report = {.valid = true};
+    for (int8_t i = 0; i < cnt; i++) {
+        if (query(keys[i]).type) {
+            report.mod_key = query(keys[i]).mod_key;
+        } else {
+            memcpy(report.data, query(keys[i]).keys, 6);
+        }
+    }
+    return report;
 }
 
 // todo: make the debounce work by storing the last time in an array and checking against that
-static inline int8_t get_key() {
-    int8_t key = -1;
+static inline hid_report get_key() {
+    int8_t keys[2] = {0};
+    hid_report report = {.valid = false};
     uint32_t start = to_ms_since_boot(get_absolute_time());
     while (to_ms_since_boot(get_absolute_time()) - start < DEBOUNCE_DELAY) {
-        int8_t current_key = scan_matrix();
-        if (key != current_key) {
-            key = current_key;
+        int8_t current_keys[2] = {0};
+        int8_t cnt = 0;
+        scan_matrix(current_keys, &cnt);
+        if (memcmp(keys, current_keys, 2) != 0 && cnt > 0) {
+            memcpy(keys, current_keys, 2);
+            report = parse_keys(keys, cnt);
             start = to_ms_since_boot(get_absolute_time());
         }
     }
-    return key;
+    return report;
 }
 
 static inline void set_dpy(int8_t keycode) {
@@ -74,18 +89,10 @@ static inline void set_dpy(int8_t keycode) {
 }
 
 static inline int32_t get_enc() {
-    // print diff
-    // char str[10];
-    // snprintf(str, 10, "%d", diff);
-    // ssd1306_clear(&oled_display);
-    // ssd1306_draw_string(&oled_display, 0, 0, 1, str);
-    // ssd1306_show(&oled_display);
     int8_t diff = get_enc_pos_diff();
     if (diff > 0) {
-        diff = 0;
         return encoder.increment;  // increment
     } else if (diff < 0) {
-        diff = 0;
         return encoder.decrement;  // decrement
     } else if (get_enc_btn_state()) {
         return encoder.button;  // button

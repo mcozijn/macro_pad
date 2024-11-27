@@ -16,7 +16,13 @@ enum {
     BLINK_SUSPENDED = 2500,
 };
 
-typedef int8_t (*get_key_fn)(void);
+typedef struct hid_report {
+    bool valid;
+    uint8_t mod_key;
+    uint8_t data[6];
+} hid_report;
+
+typedef hid_report (*get_key_fn)(void);
 typedef int32_t (*get_enc_fn)(void);
 typedef void (*set_dpy_fn)(int8_t keycode);
 
