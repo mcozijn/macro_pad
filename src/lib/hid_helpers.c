@@ -58,4 +58,29 @@ char keycode_to_char(uint8_t keycode, bool shift) {
 
 void send_keycodes(uint8_t report_id, uint8_t modifier, uint8_t keycodes[6]) {
     tud_hid_keyboard_report(report_id, modifier, keycodes);
+    sleep_ms(10);
+
+    // Send a null report to release all keys
+    tud_hid_keyboard_report(report_id, 0, NULL);
+    sleep_ms(10);
+}
+
+
+void send_long_keystroke(const uint8_t *sequence, size_t length, uint8_t modifier) {
+    for (size_t i = 0; i < length; i++) {
+        uint8_t keycode = sequence[i];
+        send_keycodes(REPORT_ID_KEYBOARD, modifier, &keycode);
+    }
+}
+
+void send_string(const char *str, uint8_t modifier) {
+    size_t length = strlen(str);
+    for (size_t i = 0; i < length; i++) {
+        char chr = str[i];
+        uint8_t keycode;
+        uint8_t modifier;
+        if (char_to_keycode(chr, &keycode, &modifier)) {
+            send_keycodes(REPORT_ID_KEYBOARD, modifier, &keycode);
+        }
+    }
 }
