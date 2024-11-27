@@ -1,0 +1,471 @@
+{% extends "base.html" %} {% block title %} Documentation - Relevant Functions
+{% endblock %} {% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='doc.css') }}">
+<style>
+  /* Reset <pre> and <code> styles */
+  pre,
+  code {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: auto;
+  }
+
+  code {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #333;
+  }
+
+  .section {
+    margin-bottom: 40px;
+  }
+</style>
+{% endblock %} {% block content %}
+<h1>Macro Pad Firmware guide!</h1>
+
+<p>
+  This documentation provides an overview of the example firmware file (<code>main.c</code>). 
+  It covers the setup, key scanning, encoder
+  handling, display updates, and the implementation of modifier keys.
+</p>
+
+<p>
+  The code is located at <a href="https://github.com/CircuitReeRUG/macro_pad">CircuitReeRUG/macro_pad</a>.
+</p>
+<p class="note">
+  <strong>Note:</strong> The example firmware is absolute trash, but it's a good starting point for your own custom firmware.
+</p>
+
+<div class="section">
+  <h2>1. Included Libraries and Headers</h2>
+  <p>
+    The firmware begins by including necessary hardware and software libraries:
+  </p>
+  <pre><code class="language-c"> 
+#include &lthardware/i2c.h&gt // pico-sdk
+#include &lthardware/pio.h&gt // pico-sdk
+#include &ltpico/multicore.h&gt // pico-sdk
+#include &ltpico/stdlib.h&gt // pico-sdk
+#include "config.h" // Our custom configuration, you are encouraged to use it
+#include "encoder.h" // Encoder lib
+#include "hardware/timer.h" // pico-sdk
+#include "hid_helpers.h" // HID helper functions
+#include "mhid.h" // TinyUSB HID handler
+#include "ssd1306.h" // OLED display lib</code></pre>
+  <p>
+    These headers provide functionalities for I2C communication, Programmable
+    I/O (PIO), multi-core processing, standard input/output, encoder handling,
+    HID (Human Interface Device) interactions, and controlling the SSD1306 OLED
+    display.
+  </p>
+</div>
+
+<div class="section">
+  <h2>2. Global Variables</h2>
+  <p>A global instance of the OLED display is declared:</p>
+  <pre><code class="language-c">
+static ssd1306_t oled_display;</code></pre>
+</div>
+
+<div class="section">
+  <h2>3. I2C Setup</h2>
+  <p>
+    The <code>setup_i2c()</code> function initializes the I2C communication
+    necessary for the OLED display on pin 17 (SDA) and pin 18 (SCL):
+  </p>
+  <pre><code class="language-c">
+static void setup_i2c() {
+    i2c_init(I2C_INSTANCE(1), 400 * 1000); // Initialize I2C at 400kHz
+    gpio_set_function(SCREEN_SDA, GPIO_FUNC_I2C); // Set SDA pin
+    gpio_set_function(SCREEN_SCL, GPIO_FUNC_I2C); // Set SCL pin
+    gpio_pull_up(SCREEN_SDA); // Enable pull-up resistor on SDA
+    gpio_pull_up(SCREEN_SCL); // Enable pull-up resistor on SCL
+}</code></pre>
+</div>
+
+<div class="section">
+  <h2>4. Keyboard GPIO Setup</h2>
+  <p>
+    The <code>setup_kb_gpio()</code> function configures the GPIO pins for the
+    keyboard matrix (rows and columns):
+  </p>
+  <pre><code class="language-c">
+static void setup_kb_gpio() {
+    for (uint8_t i = 0; i &lt; MATRIX_COLS; i++) {
+        gpio_init(col_pins[i]);
+        gpio_set_dir(col_pins[i], GPIO_IN);
+        gpio_pull_up(col_pins[i]);
+    }
+    for (uint8_t j = 0; j &lt; MATRIX_ROWS; j++) {
+        gpio_init(row_pins[j]);
+        gpio_set_dir(row_pins[j], GPIO_OUT);
+        gpio_put(row_pins[j], 1);
+    }
+}</code></pre>
+  <p>
+    This function initializes each column pin as an input with pull-up resistors
+    and each row pin as an output set to high, preparing the keyboard matrix for
+    scanning key presses.
+  </p>
+</div>
+
+<div class="section">
+  <h2>5. Scanning the Keyboard Matrix</h2>
+  <p>
+    The <code>scan_matrix()</code> function detects key presses by scanning the
+    keyboard matrix:
+  </p>
+  <pre><code class="language-c">
+static inline int8_t scan_matrix() {
+    int8_t key = 0;
+    for (uint8_t i = 0; i &lt; MATRIX_ROWS; i++) {
+        gpio_put(row_pins[i], 0); // Activate row
+        sleep_us(1); // Short delay to stabilize
+
+        for (uint8_t j = 0; j &lt; MATRIX_COLS; j++) {
+            if (gpio_get(col_pins[j]) == 0) { // Check if key is pressed
+                key = (key == 0) ? (int8_t)keymap[i][MATRIX_COLS - j - 1] : -1; // Assign keycode or -1 if multiple keys
+            }
+        }
+
+        gpio_put(row_pins[i], 1); // Deactivate row
+    }
+    return key;
+}
+    </code></pre>
+  <p>
+    This function iterates through each row, activating it and checking each
+    column for a pressed key. If a key is pressed, it retrieves the
+    corresponding keycode from the current keymap. If multiple keys are detected
+    simultaneously, it returns -1 to indicate an invalid state.
+  </p>
+
+  <p class="note">
+    <strong>Note:</strong> This is exactly where you would implement any custom key behaviours. Please refer to <a href="https://github.com/hathach/tinyusb/blob/5217cee5de4cd555018da90f9f1bcc87fb1c1d3a/src/class/hid/hid.h"> tinyusb HID keycodes</a> for more information.
+    </p>
+</div>
+
+<div class="section">
+  <h2>6. Debouncing Key Presses</h2>
+  <p>
+    We <a href="https://www.techtarget.com/whatis/definition/debouncing">debounce</a> key presses using the <code>get_key()</code>.
+  </p>
+  <pre><code class="language-c">
+static inline int8_t get_key() {
+    int8_t key = -1;
+    uint32_t start = to_ms_since_boot(get_absolute_time());
+    while (to_ms_since_boot(get_absolute_time()) - start &lt; DEBOUNCE_DELAY) {
+        int8_t current_key = scan_matrix();
+        if (key != current_key) {
+            key = current_key;
+            start = to_ms_since_boot(get_absolute_time());
+        }
+    }
+    return key;
+}
+    </code></pre>
+  <p>
+    This function continuously scans for key presses within a defined debounce
+    delay. If the detected key changes during this period, it resets the timer,
+    ensuring that only stable key presses are registered.
+  </p>
+  <p class="note">
+    <strong>Note:</strong> The <code>DEBOUNCE_DELAY</code> constant can be adjusted
+    based on the specific hardware and key switch characteristics to prevent
+    false positives or double-presses.
+  </p>
+  <p class="note">
+    <strong>Note:</strong> The <code>get_key()</code> function is called to get the key pressed.
+    </p>
+</div>
+
+<div class="section">
+  <h2>7. Updating the OLED Display</h2>
+  <p>
+    The <code>set_dpy()</code> function updates the OLED display based on the
+    keycode that is passed to it (i.e. key pressed):
+  </p>
+  <pre><code class="language-c">
+static inline void set_dpy(int8_t keycode) {
+    if (keycode == -1) return;
+    char ch = keycode_to_char((char)keycode, false);
+    if (ch) {
+        ssd1306_clear(&oled_display);
+        char str[2] = {ch, '\0'};
+        ssd1306_draw_string(&oled_display, 0, 0, 7, str);
+        ssd1306_show(&oled_display);
+    }
+}
+    </code></pre>
+  <p>
+    This function translates the keycode to a character and displays it on the
+    OLED screen. If the keycode is invalid (-1), it does nothing.
+  </p>
+</div>
+
+<div class="section">
+  <h2>8. Handling the Encoder</h2>
+  <p>
+    The <code>get_enc()</code> function processes the encoder's position and
+    button state:
+  </p>
+  <pre><code class="language-c">
+static inline int32_t get_enc() {
+    int8_t diff = get_enc_pos_diff();
+    if (diff &gt; 0) {
+        diff = 0;
+        return encoder.increment;  // Increment action
+    } else if (diff &lt; 0) {
+        diff = 0;
+        return encoder.decrement;  // Decrement action
+    } else if (get_enc_btn_state()) {
+        return encoder.button;  // Button press action
+    }
+    return -1;
+}
+    </code></pre>
+  <p>
+    This function detects rotational changes (increments or decrements) and
+    button presses from the encoder. It returns the corresponding action based
+    on the encoder's state.
+  </p>
+</div>
+
+<div class="section">
+  <h2>9. Main Function</h2>
+  <p>
+    The <code>main()</code> function initializes the board, I2C, OLED display,
+    keyboard GPIO, and encoder. It then enters an infinite loop to handle HID
+    tasks and run the HID handler.
+  </p>
+  <pre><code class="language-c">
+int main() {
+    board_init();
+    tud_init(BOARD_TUD_RHPORT);
+
+    if (board_init_after_tusb) {
+        board_init_after_tusb();
+    }
+
+    // Display setup
+    setup_i2c();
+    ssd1306_init(&oled_display, 128, 64, 0x3C, I2C_INSTANCE(1));
+    ssd1306_clear(&oled_display);
+    ssd1306_show(&oled_display);
+
+    // Keyboard and encoder setup
+    setup_kb_gpio();
+    setup_enc();
+
+    while (1) {
+        tud_task();
+        run_hid(.get_key = get_key, .set_dpy = set_dpy, .get_enc = get_enc);
+    }
+}
+    </code></pre>
+  <p>
+    This function sets up all necessary peripherals and continuously processes
+    HID tasks, allowing the macro pad to function as intended.
+  </p>
+  <p class="note">
+    <strong>Note:</strong> The <code>run_hid()</code> function is called to handle HID tasks (whenever a thing happens, send it to the host).
+     <a href="https://www.geeksforgeeks.org/function-pointer-in-c/">Function pointers</a> are passed. 
+</div>
+
+<div class="section">
+    <h2>10. Implementing Macros!</h2>
+    <p>
+        To send custom keystroke sequences, you can use the <code>send_keycodes()</code> function from the <code>hid_helpers.h</code> file:
+    </p>
+    <pre><code class="language-c">
+// Define the custom sequence
+static const uint8_t custom_sequence[] = {
+    HID_KEY_H, HID_KEY_E, HID_KEY_L, HID_KEY_L, HID_KEY_O  // Represents "HELLO"
+};
+// Function to send a sequence of keystrokes
+send_keycodes(REPORT_ID_KEYBOARD, 0, custom_sequence);
+    </code></pre>
+    <p>
+        This function sends each key press and release in the custom sequence array
+        with a short delay between each action.
+    </p>
+    <p class="note">
+        <strong>Note:</strong> The <code>send_keycodes()</code> function is called to send the custom sequence.
+        </p>
+    <p>
+        To trigger the custom sequence, add a condition in the main loop that calls
+        the function when a specific button is pressed:
+    </p>
+<div class="section">
+  <h2>11. (OPTIONAL) Implementing Modifier Key</h2>
+  <p>
+    To enable a modifier key that switches between keymaps, follow these steps:
+  </p>
+
+  <h3>A. Define the Modifier Key</h3>
+  <p>
+    Select a specific key in your matrix to act as the modifier key. For this
+    example, we'll use the key at row 0, column 0.
+  </p>
+  <pre><code class="language-c">
+#define MODIFIER_ROW 0
+#define MODIFIER_COL 0
+    </code></pre>
+
+  <h3>B. Update Keymaps</h3>
+  <p>Define both the default and alternate keymaps.</p>
+  <pre><code class="language-c">
+// Default keymap
+static const uint8_t keymap_default[MATRIX_ROWS][MATRIX_COLS] = {
+    {HID_KEY_A, HID_KEY_B, HID_KEY_C},
+    {HID_KEY_D, HID_KEY_E, HID_KEY_F},
+    {HID_KEY_G, HID_KEY_H, HID_KEY_I},
+    {HID_KEY_J, HID_KEY_K, HID_KEY_L},
+};
+
+// Alternative keymap (user-defined)
+static const uint8_t keymap_alt[MATRIX_ROWS][MATRIX_COLS] = {
+    {HID_KEY_M, HID_KEY_N, HID_KEY_O},
+    {HID_KEY_P, HID_KEY_Q, HID_KEY_R},
+    {HID_KEY_S, HID_KEY_T, HID_KEY_U},
+    {HID_KEY_V, HID_KEY_W, HID_KEY_X},
+};
+    </code></pre>
+
+  <h3>C. Modify the Key Scanning Function</h3>
+  <p>
+    Enhance the <code>scan_matrix()</code> function to detect when the modifier
+    key is pressed and switch to the alternate keymap accordingly.
+  </p>
+  <pre><code class="language-c">
+static bool modifier_active = false;
+static const uint8_t (*current_keymap)[MATRIX_COLS] = keymap_default;
+
+static inline int8_t scan_matrix() {
+    int8_t key = 0;
+    modifier_active = false;
+
+    for (uint8_t i = 0; i &lt; MATRIX_ROWS; i++) {
+        gpio_put(row_pins[i], 0);
+        sleep_us(1);
+
+        for (uint8_t j = 0; j &lt; MATRIX_COLS; j++) {
+            if (gpio_get(col_pins[j]) == 0) {
+                if (i == MODIFIER_ROW && j == MODIFIER_COL) {
+                    modifier_active = true;
+                    current_keymap = keymap_alt;
+                } else {
+                    key = (key == 0) ? (int8_t)current_keymap[i][MATRIX_COLS - j - 1] : -1;
+                }
+            }
+        }
+
+        gpio_put(row_pins[i], 1);
+    }
+
+    if (!modifier_active) {
+        current_keymap = keymap_default;
+    }
+
+    return key;
+}
+    </code></pre>
+  <p>
+    This modification ensures that when the modifier key is held down, the macro
+    pad switches to the alternate keymap. Releasing the modifier key reverts to
+    the default keymap.
+  </p>
+  <p class="note">
+    <strong>Note:</strong> This implementation is absolutely horrendous. It's a good idea to refactor this into a more maintainable piece of code. Please share your refactored code with us!
+    </p>
+
+  <h3>D. Update Display Functionality</h3>
+  <p>
+    Modify the <code>set_dpy()</code> function to reflect the active keymap on
+    the OLED display.
+  </p>
+  <pre><code class="language-c">
+static inline void set_dpy(int8_t keycode) {
+    if (keycode == -1) return;
+
+    ssd1306_clear(&oled_display);
+
+    if (modifier_active) {
+        ssd1306_draw_string(&oled_display, 0, 0, 1, "Alt Keymap Active");
+    } else if (keycode == SEQUENCE_BUTTON_KEYCODE) {
+        ssd1306_draw_string(&oled_display, 0, 0, 1, "Sequence Sent");
+    } else {
+        char ch = keycode_to_char((char)keycode, false);
+        if (ch) {
+            char str[2] = {ch, '\0'};
+            ssd1306_draw_string(&oled_display, 0, 0, 7, str);
+        }
+    }
+
+    ssd1306_show(&oled_display);
+}
+    </code></pre>
+  <p>
+    This enhancement provides visual feedback on the OLED display, indicating
+    when the alternate keymap is active or when a custom sequence is sent.
+  </p>
+
+</div>
+
+
+<div class="section">
+  <h2>12. Customization</h2>
+  <p>You can further customize your macro pad by:</p>
+  <ul>
+    <li>
+      Define additional keymaps and implement logic to switch between them using different modifier keys. (Max possible keymaps: ∞, if you're smart about it)
+    </li>
+    <li>
+    Create more complex macros that perform multiple actions!
+    </li>
+    <li>
+    Display more information on the OLED!
+    </li>
+    <li>
+        <strong> Have fun! </strong> Lorenzo proposes creating an audio visualizer and Matt wants to make a <a href="https://osu.ppy.sh/wiki/en/Performance_points">pp counter</a>. What do you want to do?
+  </ul>
+</div>
+
+{% endblock %} {% block scripts %}
+<!-- Include syntax highlighting library (e.g., Prism.js) -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/themes/prism-okaidia.min.css"
+  integrity="sha512-5HvW0a7ihK3ro2KhwEksDHXgIezsTeZybZDIn8d8Y015Ny+t7QWSIjnlCTjFzlK7Klb604HLGjsNqU/i5mJLjQ=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/prism.min.js"
+  integrity="sha512-UOoJElONeUNzQbbKQbjldDf9MwOHqxNz49NNJJ1d90yp+X9edsHyJoAs6O4K19CZGaIdjI5ohK+O2y5lBTW6uQ=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/prism/9000.0.1/components/prism-c.min.js"
+  integrity="sha512-EWIJI7uQnA8ClViH2dvhYsNA7PHGSwSg03FAfulqpsFiTPHfhdQIvhkg/l3YpuXOXRF2Dk0NYKIl5zemrl1fmA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
+{% endblock %}
