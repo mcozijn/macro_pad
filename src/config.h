@@ -28,26 +28,51 @@ typedef struct Key {
 
 static const Key keymap[MATRIX_ROWS][MATRIX_COLS] = {
     {
-        {true, .mod_key = KEYBOARD_MODIFIER_LEFTGUI},
-        {true, .mod_key = KEYBOARD_MODIFIER_LEFTCTRL},
-        {true, .mod_key = KEYBOARD_MODIFIER_LEFTALT},
+        {true, .mod_key = KEYBOARD_MODIFIER_LEFTALT}, // Alt key  (ROW 1, COL 3)
+        {true, .mod_key = KEYBOARD_MODIFIER_LEFTCTRL}, // Ctrl key (ROW 1, COL 2)
+        {true, .mod_key = KEYBOARD_MODIFIER_LEFTGUI}, // Windows key (ROW 1, COL 1)
     },
     {
-        {false, .keys = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F}},
-        {false, .keys = {HID_KEY_G, HID_KEY_H, HID_KEY_I, HID_KEY_J, HID_KEY_K, HID_KEY_L}},
-        {false, .keys = {HID_KEY_M, HID_KEY_N, HID_KEY_O, HID_KEY_P, HID_KEY_Q, HID_KEY_R}},
+        {false, .keys = {HID_KEY_M, HID_KEY_N, HID_KEY_O, HID_KEY_P, HID_KEY_Q, HID_KEY_R}}, // MNOPQR (R2:C3)
+        {false, .keys = {HID_KEY_G, HID_KEY_H, HID_KEY_I, HID_KEY_J, HID_KEY_K, HID_KEY_L}}, // GHIJKL (R2:C2)
+        {false, .keys = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F}}, // ABCDEF (R2:C1)
     },
     {
-        {false, .keys = {HID_KEY_S, HID_KEY_T, HID_KEY_U, HID_KEY_V, HID_KEY_W, HID_KEY_X}},
-        {false, .keys = {HID_KEY_Y, HID_KEY_Z, HID_KEY_1, HID_KEY_2, HID_KEY_3, HID_KEY_4}},
-        {false, .keys = {HID_KEY_5, HID_KEY_6, HID_KEY_7, HID_KEY_8, HID_KEY_9, HID_KEY_0}},
+        {false, .keys = {HID_KEY_5, HID_KEY_6, HID_KEY_7, HID_KEY_8, HID_KEY_9, HID_KEY_0}}, // 567890 (R3:C3)
+        {false, .keys = {HID_KEY_Y, HID_KEY_Z, HID_KEY_1, HID_KEY_2, HID_KEY_3, HID_KEY_4}}, // YZ1234 (R3:C2)
+        {false, .keys = {HID_KEY_S, HID_KEY_T, HID_KEY_U, HID_KEY_V, HID_KEY_W, HID_KEY_X}}, // STUVWX (R3:C1)
     },
     {
-        {true, .mod_key = KEYBOARD_MODIFIER_LEFTSHIFT},
-        {false, .keys = {HID_KEY_ENTER, HID_KEY_SPACE, HID_KEY_BACKSPACE, HID_KEY_TAB, HID_KEY_END, HID_KEY_DELETE}},
-        {true, .mod_key = KEYBOARD_MODIFIER_LEFTSHIFT},
+        {true, .mod_key = KEYBOARD_MODIFIER_LEFTSHIFT}, // Shift key (R4:C3)
+        {false, .keys = {HID_KEY_ENTER, HID_KEY_SPACE, HID_KEY_BACKSPACE, HID_KEY_TAB, HID_KEY_END, HID_KEY_DELETE}}, // Enter, Space, Backspace, Tab, End, Delete (R4:C2)
+        {true, .mod_key = KEYBOARD_MODIFIER_LEFTSHIFT}, // Shift key (R4:C1)
     },
 };
+
+
+
+// static const Key keymap[MATRIX_ROWS][MATRIX_COLS] = {
+//     {
+//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTALT}, // Alt key  (ROW 1, COL 3)
+//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTCTRL}, // Ctrl key (ROW 1, COL 2)
+//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTGUI}, // Windows key (ROW 1, COL 1)
+//     },
+//     {
+//         {false, .keys = {HID_KEY_C}}, // C (R2:C3)
+//         {false, .keys = {HID_KEY_B}}, // B (R2:C2)
+//         {false, .keys = {HID_KEY_A}}, // A (R2:C1)
+//     },
+//     {
+//         {false, .keys = {HID_KEY_F}}, // F (R3:C3)
+//         {false, .keys = {HID_KEY_E}}, // E (R3:C2)
+//         {false, .keys = {HID_KEY_D}}, // D (R3:C1)
+//     },
+//     {
+//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTSHIFT}, // Shift key (R4:C3)
+//         {false, .keys = {HID_KEY_G}}, // G (R4:C2)
+//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTSHIFT}, // Shift key (R4:C1)
+//     },
+// };
 
 // Simple encoder example
 static const EncoderControls encoder = {HID_USAGE_CONSUMER_VOLUME_INCREMENT, HID_USAGE_CONSUMER_VOLUME_DECREMENT, HID_USAGE_CONSUMER_PLAY_PAUSE};
