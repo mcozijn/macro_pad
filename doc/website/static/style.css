@@ -64,10 +64,6 @@ pre {
     margin: 20px 0;
 }
 
-.nav {
-    display: flex;
-    gap: 20px;
-}
 
 .setup-container {
     display: flex;
@@ -220,12 +216,33 @@ footer {
     }
 }
 
-#doc{
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ensures spacing between nav items */
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    gap: 20px;
+    padding: 10px;
+}
+
+#doc {
     color: var(--carrot-orange);
     text-decoration: none;
-    margin-right: 33vw;
+    margin: 0 auto;
+    text-align: center;
+    flex: 1;
 }
 
 #doc:hover {
     color: gray;
+}
+
+@media (max-width: 768px) {
+    .nav {
+        flex-direction: column;
+        text-align: center;
+    }
+    #doc {
+        margin: 10px 0;
+    }
 }
