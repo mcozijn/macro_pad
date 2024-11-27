@@ -12,7 +12,7 @@ body {
     font-family: "Fira Sans", sans-serif;
     margin: 0;
     padding: 0;
-    background-color: var(--white);
+    background-color: #f4f4f4;
     color: black;
 }
 
@@ -33,12 +33,6 @@ header img {
     height: 40px;
 }
 
-header a {
-    text-decoration: none;
-    color: var(--carrot-orange);
-    font-weight: 600;
-    transition: color 0.2s ease-in-out;
-}
 
 main {
     padding: 20px;
@@ -70,7 +64,11 @@ pre {
     margin: 20px 0;
 }
 
-/* Existing styles for other pages */
+.nav {
+    display: flex;
+    gap: 20px;
+}
+
 .setup-container {
     display: flex;
     gap: 20px;
@@ -111,13 +109,9 @@ footer {
     .setup-column {
         max-width: 100%;
     }
-    /* Removed padding adjustment for main to prevent affecting other pages */
-    /* main {
-        padding: 15px;
-    } */
+    
 }
 
-/* Overlay and highlight styles */
 #overlay {
     position: fixed;
     top: 0;
@@ -161,21 +155,21 @@ footer {
     justify-content: center;
     align-items: center;
     gap: 50px;
-    flex-wrap: wrap; /* Allows images to wrap on smaller screens */
+    flex-wrap: wrap;
 }
 
 .os-button {
     background: none;
     border: none;
     cursor: pointer;
-    flex: 1 1 300px; /* Enables flexible resizing */
+    flex: 1 1 300px;
     display: flex;
     justify-content: center;
 }
 
 .os-button img {
-    width: 100%;        /* Images take full width of container */
-    max-width: 300px;   /* Max width to prevent oversizing */
+    width: 100%;
+    max-width: 300px;
     height: auto;
     transition: transform 0.2s;
 }
@@ -224,4 +218,14 @@ footer {
     .os-button img {
         max-width: 150px;
     }
+}
+
+#doc{
+    color: var(--carrot-orange);
+    text-decoration: none;
+    margin-right: 33vw;
+}
+
+#doc:hover {
+    color: gray;
 }
