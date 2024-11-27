@@ -14,6 +14,10 @@ MAC_USERS = 0
 def index():
     return render_template('index.html', linux_users=LINUX_USERS, windows_users=WINDOWS_USERS, mac_users=MAC_USERS)
 
+@app.route('/doc')
+def doc():
+    return render_template('doc.html', linux_users=LINUX_USERS, windows_users=WINDOWS_USERS, mac_users=MAC_USERS)
+
 @app.route('/linux')
 def linux():
     return render_template('linux.html', linux_users=LINUX_USERS, windows_users=WINDOWS_USERS, mac_users=MAC_USERS)
