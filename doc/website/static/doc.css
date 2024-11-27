@@ -1,18 +1,52 @@
 /* Import style.css */
 @import url("style.css");
 .note {
-    background-color: #f7be7c;
-    color: #000000;
-    padding: 0.5em 1em;
-    border-radius: 5px;
-    display: inline-block;
-    margin: 0.5em 0;
-    text-wrap: wrap;
-    word-wrap: break-word;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #f7be7c;
+  color: #000000;
+  padding: 0.5em 1em;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 0.5em 0;
+  text-wrap: wrap;
+  word-wrap: break-word;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 a {
-    color: darkblue;
-    text-decoration:underline solid 2px darkblue;
+  color: darkblue;
+  text-decoration: underline solid 2px darkblue;
+}
+
+/* Reset <pre> and <code> styles */
+pre,
+code {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow: auto;
+}
+
+code {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+h1,
+h2,
+h3 {
+  color: #333;
+}
+
+.section {
+  margin-bottom: 40px;
 }

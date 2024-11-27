@@ -1,41 +1,6 @@
 {% extends "base.html" %} {% block title %} Documentation - Relevant Functions
 {% endblock %} {% block styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='doc.css') }}">
-<style>
-  /* Reset <pre> and <code> styles */
-  pre,
-  code {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: none;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    color: inherit;
-  }
-
-  pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    overflow: auto;
-  }
-
-  code {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-
-  h1,
-  h2,
-  h3 {
-    color: #333;
-  }
-
-  .section {
-    margin-bottom: 40px;
-  }
-</style>
 {% endblock %} {% block content %}
 <h1>Macro Pad Firmware guide!</h1>
 
