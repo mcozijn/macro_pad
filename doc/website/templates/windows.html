@@ -1,41 +1,67 @@
-{% extends 'base.html' %}
-
-{% block title %}
-Windows
-{% endblock %}
-
-{% block content %}
-<div class="setup-container">
-    <div class="setup-column">
-        <img src="{{ url_for('static', filename='img/windows.png') }}" alt="Windows">
-        <h2>No VS Code Setup</h2>
-        <h3>Install the <a href="https://github.com/raspberrypi/pico-setup-windows/releases/latest/download/pico-setup-windows-x64-standalone.exe">Pico SDK</a></h3>
-        <p>The Pico SDK installer sets up the necessary development environment for Raspberry Pi Pico on Windows, including the C/C++ SDK, build tools, and dependencies. :contentReference[oaicite:0]{index=0}</p>
-        <h3>After <a href="#pulling">pulling</a>:</h3>
-        <p>When it's time to build the project, run the following command:</p>
-        <pre><code>./build.sh</code></pre>
-        <p>Then, upload it using:</p>
-        <pre><code>./upload.sh</code></pre>
-    </div>
-
-    <div class="setup-column">
-        <img src="{{ url_for('static', filename='img/vscode.png') }}" alt="VS Code">
-        <h2>VS Code Setup</h2>
-        <h3>Install the <a href="https://marketplace.visualstudio.com/items?itemName=raspberry-pi.raspberry-pi-pico">Raspberry Pi Pico Extension</a></h3>
-        <p>The official Raspberry Pi Pico extension for Visual Studio Code simplifies project creation, development, and debugging for Pico boards. It includes features like a project generator, automatic toolchain management, and one-click compilation. :contentReference[oaicite:1]{index=1}</p>
-    </div>
-</div>
-
+{% extends 'base.html' %} {% block title %} Windows {% endblock %} {% block
+content %}
 <div id="pulling">
-    <h2>Pulling</h2>
-    <p>To clone the repository and its submodules, execute the following commands:</p>
-    <pre><code>git clone https://github.com/CircuitReeRUG/macro_pad.git
+  <h2>Pulling</h2>
+  <p>
+    Install <a href="https://git-scm.com/download/win">Git</a> and open Git Bash
+  </p>
+  <p>
+    To clone the repository and its submodules, execute the following commands:
+  </p>
+  <pre><code>git clone https://github.com/CircuitReeRUG/macro_pad.git
 cd macro_pad
 git submodule update --init --recursive</code></pre>
 </div>
 
-{% endblock %}
+  <div class="setup">
+    <img
+      src="{{ url_for('static', filename='img/vscode.png') }}"
+      alt="VS Code"
+      style="width: 100px; height: 100px;"
+    />
+    <h2>VS Code Setup</h2>
+    <h3>
+      Install the
+      <a
+        href="https://marketplace.visualstudio.com/items?itemName=raspberry-pi.raspberry-pi-pico"
+        >Raspberry Pi Pico Extension</a
+      >
+    </h3>
+    <p>
+      Considering that the other <a href="https://www.eeweb.com/an-easy-solution-to-compile-the-raspberry-pi-pico-c-c-code-using-vscode-and-pico-sdk-in-windows/">well known method</a> involves installing VS Code anyway, it is recommended to use the Raspberry Pi Pico Extension.
 
-{% block scripts %}
+    </p>
+    <p>
+      To set things up, after following the <a href="#pulling">pulling</a> instructions above - install the extension.
+    </p>
+    <br />
+    <h3>Click on the Pico SDK extension's icon.</h3>
+      <img src="{{ url_for('static', filename='img/doc/extension.png') }}" alt="Extension icon" style="width: 100%; height: auto;" />
+    <h3> Click on <b>"Import Project"</b> and you should see the following screen: </h3>
+      <img src="{{ url_for('static', filename='img/doc/import_project.png') }}" alt="Import Project" style="width: 100%; height: auto;" />
+    <p>
+      Click on <b>"Select Folder"</b> and select the entire macro_pad folder. Select the Pico SDK version to be <b>2.0.0</b> and click on "Import".
+      <br />
+      The extension will automatically detect the CMakeLists.txt file and set up the project for you.
+    </p>
+    <p class = "note">
+      Note: The extension is still in beta and may have some bugs. It will also take a while to import, so be patient and <b> do not close the window </b> until it is done.
+    </p>
+
+    <h2>Building</h2>
+    <p>
+    To build the project, click on the <b>Compile Project</b> button. After that's done you can click on the <b>Run Project (USB)</b> button to flash the firmware to the Pico.
+    </p>
+    <p class="note">
+      Note: This will only work if the board is in bootloader mode. To enter bootloader mode, hold down the BOOTSEL and press RESET or replug the board.
+    </p>
+    <p class="note">
+      Note: <b> Do not click on <i> Flash Project (SWD) </i> </b> as it will not work.
+    </p>
+  </div>
+
+
+
+{% endblock %} {% block scripts %}
 <script src="{{ url_for('static', filename='js/highlight.js') }}"></script>
 {% endblock %}
