@@ -1,8 +1,8 @@
 /* Import style.css */
 @import url("style.css");
 .note {
-    background-color: var(--carrot-orange);
-    color: black;
+    background-color: #f7be7c;
+    color: #000000;
     padding: 0.5em 1em;
     border-radius: 5px;
     display: inline-block;
@@ -10,4 +10,9 @@
     text-wrap: wrap;
     word-wrap: break-word;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+a {
+    color: darkblue;
+    text-decoration:underline solid 2px darkblue;
 }
