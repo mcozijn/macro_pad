@@ -5,7 +5,7 @@ Linux and macOS
 {% endblock %}
 
 {% block content %}
-Click <a href="{{ url_for('windows') }}">here</a> if you're using VS Code.
+Click <a href="{{ url_for('windows') }}">here</a> if you're using VS Code. Only difference is the installation of git.
 <div class="setup-container">
    
     <div class="setup-column">
@@ -42,8 +42,10 @@ Although the script should be fixed, last time I added unstable repos I broke my
 <h2>Next Steps</h2>
 
 <h3>Pull the latest updates:</h3>
-<pre><code>git clone https://github.com/CircuitReeRUG/macro_pad.git</code></pre>
-<pre><code>git submodule update --init --recursive</code></pre>
+<pre>
+<code>git clone https://github.com/CircuitReeRUG/macro_pad.git
+cd macro_pad
+git submodule update --init --recursive</code></pre>
 
 <h3>Build the project:</h3>
 <p>When it's time to build the project, run the following command:</p>
