@@ -200,8 +200,8 @@ footer {
 
 .os-button img {
   width: 100%;
-  max-width: 300px;
-  height: auto;
+  max-width: 100%;
+  height: 200px;
   transition: transform 0.2s;
 }
 
@@ -314,6 +314,10 @@ footer {
 
   .user-counts span {
     font-size: 10px;
+  }
+  .os-button img {
+    height: 150px;
+    max-width: 150px;
   }
 }
 
