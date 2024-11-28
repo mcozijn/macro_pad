@@ -118,9 +118,29 @@ static inline void init_display() {
     display_show(&oled_display);
 }
 
-static void update_macropad(macropad_options options) {
-    options.get_enc = get_enc;
+void scan_matrix(int8_t *arr, int8_t *cnt);
 
+hid_report get_keycode() {
+    int8_t keys[2] = {0};
+    hid_report report = {.valid = false};
+    uint32_t start = to_ms_since_boot(get_absolute_time());
+
+    while (to_ms_since_boot(get_absolute_time()) - start < DEBOUNCE_DELAY) {
+        int8_t current_keys[2] = {0};
+        int8_t cnt = 0;
+        scan_matrix(current_keys, &cnt);
+
+        if (memcmp(keys, current_keys, 2) != 0 && cnt > 0) {
+            memcpy(keys, current_keys, 2);
+            report = parse_keys(keys, cnt);
+            start = to_ms_since_boot(get_absolute_time());
+        }
+    }
+
+    return report;
+}
+
+static inline void update_macropad(macropad_options options) {
     hid_task(options);
 }
 
