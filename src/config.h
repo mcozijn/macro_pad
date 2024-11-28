@@ -49,30 +49,9 @@ static const Key keymap[MATRIX_ROWS][MATRIX_COLS] = {
     },
 };
 
-
-
-// static const Key keymap[MATRIX_ROWS][MATRIX_COLS] = {
-//     {
-//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTALT}, // Alt key  (ROW 1, COL 3)
-//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTCTRL}, // Ctrl key (ROW 1, COL 2)
-//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTGUI}, // Windows key (ROW 1, COL 1)
-//     },
-//     {
-//         {false, .keys = {HID_KEY_C}}, // C (R2:C3)
-//         {false, .keys = {HID_KEY_B}}, // B (R2:C2)
-//         {false, .keys = {HID_KEY_A}}, // A (R2:C1)
-//     },
-//     {
-//         {false, .keys = {HID_KEY_F}}, // F (R3:C3)
-//         {false, .keys = {HID_KEY_E}}, // E (R3:C2)
-//         {false, .keys = {HID_KEY_D}}, // D (R3:C1)
-//     },
-//     {
-//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTSHIFT}, // Shift key (R4:C3)
-//         {false, .keys = {HID_KEY_G}}, // G (R4:C2)
-//         {true, .mod_key = KEYBOARD_MODIFIER_LEFTSHIFT}, // Shift key (R4:C1)
-//     },
-// };
-
 // Simple encoder example
-static const EncoderControls encoder = {HID_USAGE_CONSUMER_VOLUME_INCREMENT, HID_USAGE_CONSUMER_VOLUME_DECREMENT, HID_USAGE_CONSUMER_PLAY_PAUSE};
+static const EncoderControls encoder = {
+    HID_USAGE_CONSUMER_VOLUME_INCREMENT, // Spinning clockwise
+    HID_USAGE_CONSUMER_VOLUME_DECREMENT, // Spinning counter-clockwise
+    HID_USAGE_CONSUMER_PLAY_PAUSE // Pressing the encoder
+};
