@@ -24,7 +24,7 @@ typedef struct Key {
         uint8_t mod_key;
         uint8_t keys[6];
     };
-}Key;least_correlated <- correlation_pairs[which.min(abs(correlation_pairs$value)), ]
+}Key;
 
 static const Key keymap[MATRIX_ROWS][MATRIX_COLS] = {
     {

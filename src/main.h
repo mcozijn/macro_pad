@@ -10,9 +10,9 @@
 #include "hardware/timer.h"
 #include "hid_helpers.h"
 #include "mhid.h"
-#include "ssd1306.h"
+#include "display.h"
 
-static ssd1306_t oled_display;
+static display_t oled_display;
 
 static void setup_i2c() {
     i2c_init(I2C_INSTANCE(1), 400 * 1000);
@@ -78,10 +78,10 @@ static inline void set_display_function(int8_t keycode) {
     char ch = keycode_to_char((char)keycode, false);
 
     if (ch) {
-        ssd1306_clear(&oled_display);
+        display_clear(&oled_display);
         char str[2] = {ch, '\0'};
-        ssd1306_draw_string(&oled_display, 0, 0, 7, str);
-        ssd1306_show(&oled_display);
+        display_draw_string(&oled_display, 0, 0, 7, str);
+        display_show(&oled_display);
     }
 }
 
@@ -113,9 +113,9 @@ static inline void init_keypad() {
 static inline void init_display() {
     // Display setup
     setup_i2c();
-    ssd1306_init(&oled_display, 128, 64, 0x3C, I2C_INSTANCE(1));
-    ssd1306_clear(&oled_display);
-    ssd1306_show(&oled_display);
+    display_init(&oled_display, 128, 64, 0x3C, I2C_INSTANCE(1));
+    display_clear(&oled_display);
+    display_show(&oled_display);
 }
 
 static void update_macropad(macropad_options options) {

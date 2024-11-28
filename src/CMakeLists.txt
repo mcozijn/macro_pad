@@ -31,7 +31,7 @@ add_executable(macro_pad
     lib/mhid.c
     lib/usb_descriptors.c
     lib/encoder.c
-    lib/ssd1306.c
+    lib/display.c
     lib/hid_helpers.c
 )
 
