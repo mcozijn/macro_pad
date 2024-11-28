@@ -5,14 +5,19 @@ Linux and macOS
 {% endblock %}
 
 {% block content %}
-
+Click <a href="{{ url_for('windows') }}">here</a> if you're using VS Code.
 <div class="setup-container">
+   
     <div class="setup-column">
         <img src="{{ url_for('static', filename='img/tux.png') }}" alt="Linux">
         <h2>Linux Development Setup</h2>
         <h3>Debian-based Systems:</h3>
-        <pre><code>sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib picotoo git</code></pre>
-        
+        <pre><code>sudo apt install cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib git</code></pre>
+        Installing picotool:
+        <pre><code>sudo bash -c 'echo "deb http://deb.debian.org/debian unstable main" >> /etc/apt/sources.list && apt update && apt -t unstable install -y picotool && sed -i "/unstable main/d" /etc/apt/sources.list && apt update'</pre></code>
+        <p class="note">
+Although the script should be fixed, last time I added unstable repos I broke my kernel, so <a href="https://github.com/raspberrypi/picotool?tab=readme-ov-file#usage-by-the-raspberry-pi-pico-sdk"> building from source</a> is recommended.
+</p>
         <h3>Arch-based Systems:</h3>
         <pre><code>sudo pacman -Syy cmake</code></pre>
         <pre><code>yay -S arm-none-eabi-gcc arm-none-eabi-newlib libstdc++-arm-none-eabi-newlib picotool</code></pre>
@@ -28,7 +33,9 @@ Linux and macOS
         <h3>Install Dependencies:</h3>
         <pre><code>brew install cmake arm-none-eabi-gcc libnewlib picotool git</code></pre>
 
-        <h3 style="color: var(--carrot-orange)">Note: This hasn't been tested, we don't have Macs. Call us over when doing it.</h3>
+        <p class="note">
+        Note: This hasn't been tested, we don't have Macs. Call us over when doing it.
+        </p>
     </div>
 </div>
 
@@ -36,12 +43,12 @@ Linux and macOS
 
 <h3>Pull the latest updates:</h3>
 <pre><code>git clone https://github.com/CircuitReeRUG/macro_pad.git</code></pre>
-<pre><code>git pull --recurse-submodules --jobs=10</code></pre>
+<pre><code>git submodule update --init --recursive</code></pre>
 
 <h3>Build the project:</h3>
 <p>When it's time to build the project, run the following command:</p>
 <pre><code>./build.sh</code></pre>
-<p>Then, upload it using:</p>
+<p>Then, upload it using (remember to put the device in <b>BOOTSEL</b> mode by holding the button and resetting it):</p>
 <pre><code>./upload.sh</code></pre>
 
 {% endblock %}
