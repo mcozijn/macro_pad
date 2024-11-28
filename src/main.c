@@ -84,6 +84,6 @@ int main() {
         update_macropad((macropad_options) {
             .get_keycode_function = get_keycode,
             .set_display_function = set_display
-        })
+        });
     }
 }

@@ -28,7 +28,7 @@ typedef void (*set_dpy_fn)(int8_t keycode);
 
 typedef struct macropad_options {
     get_key_fn get_keycode_function;
-    get_key_fn get_enc;
+    get_enc_fn get_enc;
     set_dpy_fn set_display_function;
 } macropad_options;
 

@@ -72,26 +72,6 @@ static inline hid_report parse_keys(int8_t keys[2], int8_t cnt) {
     return report;
 }
 
-static inline hid_report get_keycode() {
-    int8_t keys[2] = {0};
-    hid_report report = {.valid = false};
-    uint32_t start = to_ms_since_boot(get_absolute_time());
-
-    while (to_ms_since_boot(get_absolute_time()) - start < DEBOUNCE_DELAY) {
-        int8_t current_keys[2] = {0};
-        int8_t cnt = 0;
-        scan_matrix(current_keys, &cnt);
-
-        if (memcmp(keys, current_keys, 2) != 0 && cnt > 0) {
-            memcpy(keys, current_keys, 2);
-            report = parse_keys(keys, cnt);
-            start = to_ms_since_boot(get_absolute_time());
-        }
-    }
-
-    return report;
-}
-
 static inline void set_display_function(int8_t keycode) {
     if (keycode == -1) return;
 
