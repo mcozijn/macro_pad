@@ -1,4 +1,3 @@
-// https://github.com/daschr/pico-ssd1306 << Thank you 💓
 #include <pico/stdlib.h>
 #include <hardware/i2c.h>
 #include <pico/binary_info.h>
@@ -6,7 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "ssd1306.h"
+#include "display.h"
 #include "font.h"
 
 inline static void swap(int32_t *a, int32_t *b) {
@@ -28,12 +27,12 @@ inline static void fancy_write(i2c_inst_t *i2c, uint8_t addr, const uint8_t *src
     }
 }
 
-inline static void ssd1306_write(ssd1306_t *p, uint8_t val) {
+inline static void display_write(display_t *p, uint8_t val) {
     uint8_t d[2] = {0x00, val};
-    fancy_write(p->i2c_i, p->address, d, 2, "ssd1306_write");
+    fancy_write(p->i2c_i, p->address, d, 2, "display_write");
 }
 
-bool ssd1306_init(ssd1306_t *p, uint16_t width, uint16_t height, uint8_t address, i2c_inst_t *i2c_instance) {
+bool display_init(display_t *p, uint16_t width, uint16_t height, uint8_t address, i2c_inst_t *i2c_instance) {
     p->width = (uint8_t)width;
     p->height = (uint8_t)height;
     p->pages = (uint8_t)(height / 8);
@@ -60,49 +59,49 @@ bool ssd1306_init(ssd1306_t *p, uint16_t width, uint16_t height, uint8_t address
     };
 
     for (size_t i = 0; i < sizeof(cmds); ++i) {
-        ssd1306_write(p, cmds[i]);
+        display_write(p, cmds[i]);
     }
     return true;
 }
 
-inline void ssd1306_deinit(ssd1306_t *p) {
+inline void display_deinit(display_t *p) {
     free(p->buffer - 1);
 }
 
-inline void ssd1306_poweroff(ssd1306_t *p) {
-    ssd1306_write(p, SET_DISP | 0x00);
+inline void display_poweroff(display_t *p) {
+    display_write(p, SET_DISP | 0x00);
 }
 
-inline void ssd1306_poweron(ssd1306_t *p) {
-    ssd1306_write(p, SET_DISP | 0x01);
+inline void display_poweron(display_t *p) {
+    display_write(p, SET_DISP | 0x01);
 }
 
-inline void ssd1306_contrast(ssd1306_t *p, uint8_t val) {
-    ssd1306_write(p, SET_CONTRAST);
-    ssd1306_write(p, val);
+inline void display_contrast(display_t *p, uint8_t val) {
+    display_write(p, SET_CONTRAST);
+    display_write(p, val);
 }
 
-inline void ssd1306_invert(ssd1306_t *p, uint8_t inv) {
-    ssd1306_write(p, SET_NORM_INV | (inv & 1));
+inline void display_invert(display_t *p, uint8_t inv) {
+    display_write(p, SET_NORM_INV | (inv & 1));
 }
 
-inline void ssd1306_clear(ssd1306_t *p) {
+inline void display_clear(display_t *p) {
     memset(p->buffer, 0, p->bufsize);
 }
 
-void ssd1306_clear_pixel(ssd1306_t *p, int32_t x, int32_t y) {
+void display_clear_pixel(display_t *p, int32_t x, int32_t y) {
     if (x < 0 || y < 0 || x >= p->width || y >= p->height) return;
 
     uint8_t mask = (uint8_t)~(uint8_t)(0x1 << (y & 0x07));
     p->buffer[x + p->width * (y >> 3)] &= mask;
 }
 
-void ssd1306_draw_pixel(ssd1306_t *p, int32_t x, int32_t y) {
+void display_draw_pixel(display_t *p, int32_t x, int32_t y) {
     if (x < 0 || y < 0 || x >= p->width || y >= p->height) return;
     p->buffer[x + p->width * (y >> 3)] |= (uint8_t)(0x1 << (y & 0x07));
 }
 
-void ssd1306_draw_line(ssd1306_t *p, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
+void display_draw_line(display_t *p, int32_t x1, int32_t y1, int32_t x2, int32_t y2) {
     if (x1 > x2) {
         swap(&x1, &x2);
         swap(&y1, &y2);
@@ -111,37 +110,37 @@ void ssd1306_draw_line(ssd1306_t *p, int32_t x1, int32_t y1, int32_t x2, int32_t
     if (x1 == x2) {
         if (y1 > y2) swap(&y1, &y2);
         for (int32_t i = y1; i <= y2; ++i)
-            ssd1306_draw_pixel(p, x1, i);
+            display_draw_pixel(p, x1, i);
         return;
     }
 
     float m = (float)(y2 - y1) / (float)(x2 - x1);
     for (int32_t i = x1; i <= x2; ++i) {
         float y = m * (float)(i - x1) + (float)y1;
-        ssd1306_draw_pixel(p, i, (int32_t)y);
+        display_draw_pixel(p, i, (int32_t)y);
     }
 }
 
-void ssd1306_clear_square(ssd1306_t *p, int32_t x, int32_t y, int32_t width, int32_t height) {
+void display_clear_square(display_t *p, int32_t x, int32_t y, int32_t width, int32_t height) {
     for (int32_t i = 0; i < width; ++i)
         for (int32_t j = 0; j < height; ++j)
-            ssd1306_clear_pixel(p, x + i, y + j);
+            display_clear_pixel(p, x + i, y + j);
 }
 
-void ssd1306_draw_square(ssd1306_t *p, int32_t x, int32_t y, int32_t width, int32_t height) {
+void display_draw_square(display_t *p, int32_t x, int32_t y, int32_t width, int32_t height) {
     for (int32_t i = 0; i < width; ++i)
         for (int32_t j = 0; j < height; ++j)
-            ssd1306_draw_pixel(p, x + i, y + j);
+            display_draw_pixel(p, x + i, y + j);
 }
 
-void ssd1306_draw_empty_square(ssd1306_t *p, int32_t x, int32_t y, int32_t width, int32_t height) {
-    ssd1306_draw_line(p, x, y, x + width, y);
-    ssd1306_draw_line(p, x, y + height, x + width, y + height);
-    ssd1306_draw_line(p, x, y, x, y + height);
-    ssd1306_draw_line(p, x + width, y, x + width, y + height);
+void display_draw_empty_square(display_t *p, int32_t x, int32_t y, int32_t width, int32_t height) {
+    display_draw_line(p, x, y, x + width, y);
+    display_draw_line(p, x, y + height, x + width, y + height);
+    display_draw_line(p, x, y, x, y + height);
+    display_draw_line(p, x + width, y, x + width, y + height);
 }
 
-void ssd1306_draw_char_with_font(ssd1306_t *p, int32_t x, int32_t y, uint32_t scale, const uint8_t *font, char c) {
+void display_draw_char_with_font(display_t *p, int32_t x, int32_t y, uint32_t scale, const uint8_t *font, char c) {
     if ((uint8_t)c < font[3] || (uint8_t)c > font[4]) return;
 
     uint32_t parts_per_line = ((uint32_t)(font[0] >> 3)) + (((font[0] & 7) > 0) ? 1U : 0U);
@@ -154,7 +153,7 @@ void ssd1306_draw_char_with_font(ssd1306_t *p, int32_t x, int32_t y, uint32_t sc
                     int32_t x_pos = x + ((int32_t)w * (int32_t)scale);
                     int32_t y_offset = (((int32_t)lp << 3) + (int32_t)j);
                     int32_t y_pos = y + y_offset * (int32_t)scale;
-                    ssd1306_draw_square(p, x_pos, y_pos, (int32_t)scale, (int32_t)scale);
+                    display_draw_square(p, x_pos, y_pos, (int32_t)scale, (int32_t)scale);
                 }
             }
             ++pp;
@@ -163,21 +162,21 @@ void ssd1306_draw_char_with_font(ssd1306_t *p, int32_t x, int32_t y, uint32_t sc
 }
 
 
-void ssd1306_draw_string_with_font(ssd1306_t *p, int32_t x, int32_t y, uint32_t scale, const uint8_t *font, const char *s) {
+void display_draw_string_with_font(display_t *p, int32_t x, int32_t y, uint32_t scale, const uint8_t *font, const char *s) {
     for (int32_t x_n = x; *s; x_n += (int32_t)((font[1] + font[2]) * scale)) {
-        ssd1306_draw_char_with_font(p, x_n, y, scale, font, *(s++));
+        display_draw_char_with_font(p, x_n, y, scale, font, *(s++));
     }
 }
 
-void ssd1306_draw_char(ssd1306_t *p, int32_t x, int32_t y, uint32_t scale, char c) {
-    ssd1306_draw_char_with_font(p, x, y, scale, font_8x5, c);
+void display_draw_char(display_t *p, int32_t x, int32_t y, uint32_t scale, char c) {
+    display_draw_char_with_font(p, x, y, scale, font_8x5, c);
 }
 
-void ssd1306_draw_string(ssd1306_t *p, int32_t x, int32_t y, uint32_t scale, const char *s) {
-    ssd1306_draw_string_with_font(p, x, y, scale, font_8x5, s);
+void display_draw_string(display_t *p, int32_t x, int32_t y, uint32_t scale, const char *s) {
+    display_draw_string_with_font(p, x, y, scale, font_8x5, s);
 }
 
-static inline uint32_t ssd1306_bmp_get_val(const uint8_t *data, size_t offset, uint8_t size) {
+static inline uint32_t display_bmp_get_val(const uint8_t *data, size_t offset, uint8_t size) {
     switch (size) {
         case 1:
             return data[offset];
@@ -190,15 +189,15 @@ static inline uint32_t ssd1306_bmp_get_val(const uint8_t *data, size_t offset, u
     }
 }
 
-void ssd1306_bmp_show_image_with_offset(ssd1306_t *p, const uint8_t *data, long size, int32_t x_offset, int32_t y_offset) {
+void display_bmp_show_image_with_offset(display_t *p, const uint8_t *data, long size, int32_t x_offset, int32_t y_offset) {
     if (size < 54) return;
 
-    const uint32_t bfOffBits = ssd1306_bmp_get_val(data, 10, 4);
-    const uint32_t biSize = ssd1306_bmp_get_val(data, 14, 4);
-    const uint32_t biWidth = ssd1306_bmp_get_val(data, 18, 4);
-    const int32_t biHeight = (int32_t)ssd1306_bmp_get_val(data, 22, 4);
-    const uint16_t biBitCount = (uint16_t)ssd1306_bmp_get_val(data, 28, 2);
-    const uint32_t biCompression = ssd1306_bmp_get_val(data, 30, 4);
+    const uint32_t bfOffBits = display_bmp_get_val(data, 10, 4);
+    const uint32_t biSize = display_bmp_get_val(data, 14, 4);
+    const uint32_t biWidth = display_bmp_get_val(data, 18, 4);
+    const int32_t biHeight = (int32_t)display_bmp_get_val(data, 22, 4);
+    const uint16_t biBitCount = (uint16_t)display_bmp_get_val(data, 28, 2);
+    const uint32_t biCompression = display_bmp_get_val(data, 30, 4);
 
     if (biBitCount != 1 || biCompression != 0) return;
 
@@ -225,18 +224,18 @@ void ssd1306_bmp_show_image_with_offset(ssd1306_t *p, const uint8_t *data, long 
             if (((img_data[x >> 3] >> (7 - (x & 7))) & 1) == color_val) {
                 int32_t x_pos = x_offset + (int32_t)x;
                 int32_t y_pos = y_offset + y;
-                ssd1306_draw_pixel(p, x_pos, y_pos);
+                display_draw_pixel(p, x_pos, y_pos);
             }
         }
         img_data += bytes_per_line;
     }
 }
 
-inline void ssd1306_bmp_show_image(ssd1306_t *p, const uint8_t *data, long size) {
-    ssd1306_bmp_show_image_with_offset(p, data, size, 0, 0);
+inline void display_bmp_show_image(display_t *p, const uint8_t *data, long size) {
+    display_bmp_show_image_with_offset(p, data, size, 0, 0);
 }
 
-void ssd1306_show(ssd1306_t *p) {
+void display_show(display_t *p) {
     uint8_t payload[] = {SET_COL_ADDR, 0, (uint8_t)(p->width - 1), SET_PAGE_ADDR, 0, (uint8_t)(p->pages - 1)};
     if (p->width == 64) {
         payload[1] += 32;
@@ -244,8 +243,8 @@ void ssd1306_show(ssd1306_t *p) {
     }
 
     for (size_t i = 0; i < sizeof(payload); ++i)
-        ssd1306_write(p, payload[i]);
+        display_write(p, payload[i]);
 
     *(p->buffer - 1) = 0x40;
-    fancy_write(p->i2c_i, p->address, p->buffer - 1, p->bufsize + 1, "ssd1306_show");
+    fancy_write(p->i2c_i, p->address, p->buffer - 1, p->bufsize + 1, "display_show");
 }
