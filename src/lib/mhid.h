@@ -26,14 +26,11 @@ typedef hid_report (*get_key_fn)(void);
 typedef int32_t (*get_enc_fn)(void);
 typedef void (*set_dpy_fn)(int8_t keycode);
 
-typedef struct run_hid_options {
-    get_key_fn get_key;
-    get_enc_fn get_enc;
-    set_dpy_fn set_dpy;
-} run_hid_options;
+typedef struct macropad_options {
+    get_key_fn get_keycode_function;
+    get_key_fn get_enc;
+    set_dpy_fn set_display_function;
+} macropad_options;
 
-#define run_hid(...)            \
-    hid_task((run_hid_options){ \
-        __VA_ARGS__})
 
-void hid_task(run_hid_options options);
+void hid_task(macropad_options options);

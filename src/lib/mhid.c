@@ -56,8 +56,8 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id,
     }
 }
 
-void hid_task(run_hid_options options) {
-    hid_report const report = options.get_key ? options.get_key() : (hid_report){0};
+void hid_task(macropad_options options) {
+    hid_report const report = options.get_keycode_function ? options.get_keycode_function() : (hid_report){0};
     int32_t const enc = options.get_enc ? options.get_enc() : -1;
 
     if (tud_suspended()) {
@@ -65,7 +65,7 @@ void hid_task(run_hid_options options) {
     } else {
         send_hid_report(report);
         send_enc_hid_report(enc);
-        if (options.set_dpy) options.set_dpy((int8_t)report.data[0]);
+        if (options.set_display_function) options.set_display_function((int8_t)report.data[0]);
     }
 }
 
