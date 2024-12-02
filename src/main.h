@@ -5,7 +5,6 @@
 #include <hardware/pio.h>
 #include <pico/multicore.h>
 #include <pico/stdlib.h>
-
 #include "config.h"
 #include "encoder.h"
 #include "hardware/timer.h"
@@ -39,7 +38,19 @@ static void setup_kb_gpio() {
     }
 }
 
-static inline void scan_matrix(int8_t *arr, int8_t *cnt);
+static inline void scan_matrix(int8_t *keys, int8_t *cnt) {
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+        gpio_put(row_pins[i], 0);
+        sleep_us(1);
+        for (uint8_t j = 0; j < MATRIX_COLS; j++) {
+            if (gpio_get(col_pins[j]) == 0 && *cnt < 2) {
+                keys[*cnt] = (int8_t)(i * MATRIX_COLS + j);
+                (*cnt)++;
+            }
+        }
+        gpio_put(row_pins[i], 1);
+    }
+}
 
 static inline void scan_matrix_backup(int8_t *arr, int8_t *cnt) {
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
@@ -122,12 +133,13 @@ static inline void init_display() {
 void scan_matrix(int8_t *arr, int8_t *cnt);
 
 hid_report get_keycode() {
-    int8_t keys[2] = {-1, -1};
+    int8_t keys[2] = {-1};
+
     hid_report report = {.valid = false};
     uint32_t start = to_ms_since_boot(get_absolute_time());
 
     while (to_ms_since_boot(get_absolute_time()) - start < DEBOUNCE_DELAY) {
-        int8_t current_keys[2] = {0};
+        int8_t current_keys[2] = {-1};
         int8_t cnt = 0;
         scan_matrix(current_keys, &cnt);
 
