@@ -11,6 +11,8 @@
 #include "hid_helpers.h"
 #include "mhid.h"
 #include "display.h"
+#include <pico/bootrom.h>
+
 
 static display_t oled_display;
 
@@ -35,20 +37,6 @@ static void setup_kb_gpio() {
         gpio_init(row_pins[j]);
         gpio_set_dir(row_pins[j], GPIO_OUT);
         gpio_put(row_pins[j], 1);
-    }
-}
-
-static inline void scan_matrix(int8_t *keys, int8_t *cnt) {
-    for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
-        gpio_put(row_pins[i], 0);
-        sleep_us(1);
-        for (uint8_t j = 0; j < MATRIX_COLS; j++) {
-            if (gpio_get(col_pins[j]) == 0 && *cnt < 2) {
-                keys[*cnt] = (int8_t)(i * MATRIX_COLS + j);
-                (*cnt)++;
-            }
-        }
-        gpio_put(row_pins[i], 1);
     }
 }
 
@@ -151,6 +139,13 @@ hid_report get_keycode() {
     }
 
     return report;
+}
+
+bool check_reset() {
+    int8_t arr[2] = {0};
+    int8_t cnt = 0;
+    scan_matrix(arr, &cnt);
+    return arr[0] == RESET_BOOTSEL_KEY || arr[1] == RESET_BOOTSEL_KEY;
 }
 
 static inline void update_macropad(macropad_options options) {

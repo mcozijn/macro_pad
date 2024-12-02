@@ -6,6 +6,7 @@
 #define DEBOUNCE_DELAY 10
 #define MATRIX_ROWS 4
 #define MATRIX_COLS 3
+#define RESET_BOOTSEL_KEY 2
 
 #define query(key) keymap[key / MATRIX_COLS][key % MATRIX_COLS]
 

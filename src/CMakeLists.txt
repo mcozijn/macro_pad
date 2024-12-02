@@ -67,7 +67,8 @@ target_link_libraries(macro_pad
 )
 
 # Set additional compile options if needed
-target_compile_options(macro_pad PRIVATE -Wall -Wextra -Wconversion)
+target_compile_options(macro_pad PRIVATE -Wall -Wextra -Wconversion -DPICO_ENTER_USB_BOOT_ON_EXIT=1)
+# target_compile_options(pico-firmware-common INTERFACE -DPICO_ENTER_USB_BOOT_ON_EXIT=1)
 
 # Generate UF2, bin, and hex files
 pico_add_extra_outputs(macro_pad)
