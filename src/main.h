@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdio.h>
 #include <hardware/i2c.h>
 #include <hardware/pio.h>
 #include <pico/multicore.h>
@@ -133,6 +134,7 @@ void scan_matrix(int8_t *arr, int8_t *cnt);
 
 hid_report get_keycode() {
     int8_t keys[2] = {-1};
+
     hid_report report = {.valid = false};
     uint32_t start = to_ms_since_boot(get_absolute_time());
 
