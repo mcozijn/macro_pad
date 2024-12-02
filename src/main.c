@@ -38,7 +38,9 @@ void set_display(int8_t keycode) {
  * cnt:    Amount of stored values. Increment every time you add a pressed key.
  */ 
 void scan_matrix(int8_t *arr, int8_t *cnt) {
-    scan_matrix_backup(arr, cnt);
+
+    // fill in code, ask for help if you don't know!
+
 }
 
 
