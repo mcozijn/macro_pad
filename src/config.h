@@ -30,7 +30,7 @@ static const Key keymap[MATRIX_ROWS][MATRIX_COLS] = {
     {
         {true, .mod_key = KEYBOARD_MODIFIER_LEFTGUI},
         {false, .keys = {HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D, HID_KEY_E, HID_KEY_F}},
-        {false, .keys = {HID_KEY_SHIFT_LEFT, HID_KEY_S}},
+        {false, .keys = {HID_KEY_GUI_LEFT, HID_KEY_F}},
     },
     {
         {true, .mod_key = KEYBOARD_MODIFIER_LEFTCTRL},
