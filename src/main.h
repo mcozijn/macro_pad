@@ -1,18 +1,19 @@
 #pragma once
 
-#include <stdio.h>
 #include <hardware/i2c.h>
 #include <hardware/pio.h>
+#include <pico/bootrom.h>
 #include <pico/multicore.h>
 #include <pico/stdlib.h>
+#include <stdio.h>
+
 #include "config.h"
+#include "display.h"
 #include "encoder.h"
 #include "hardware/timer.h"
 #include "hid_helpers.h"
 #include "mhid.h"
-#include "display.h"
-#include <pico/bootrom.h>
-
+#include "tllist.h"
 
 static display_t oled_display;
 
@@ -60,7 +61,6 @@ static inline hid_report parse_keys(int8_t keys[2], int8_t cnt) {
     hid_report report = {.valid = true};
 
     for (int8_t i = 0; i < cnt; i++) {
-
         if (query(keys[i]).type) {
             report.mod_key = query(keys[i]).mod_key;
 
@@ -85,16 +85,21 @@ static inline void set_display_function(int8_t keycode) {
     }
 }
 
-static inline int32_t get_enc() {
+static inline encoder_queue_t *get_enc() {
+    static encoder_queue_t encoder_queue = tll_init();
     int8_t diff = get_enc_pos_diff();
     if (diff > 0) {
-        return encoder.increment;  // increment
+        for (int i = 0; i < diff; i++) {
+            tll_push_back(encoder_queue, encoder.increment);
+        }
     } else if (diff < 0) {
-        return encoder.decrement;  // decrement
+        for (int i = 0; i < -diff; i++) {
+            tll_push_back(encoder_queue, encoder.decrement);
+        }
     } else if (get_enc_btn_state()) {
-        return encoder.button;  // button
+        tll_push_back(encoder_queue, encoder.button);
     }
-    return -1;
+    return &encoder_queue;
 }
 
 static inline void init_keypad() {
@@ -151,4 +156,3 @@ bool check_reset() {
 static inline void update_macropad(macropad_options options) {
     hid_task(options);
 }
-

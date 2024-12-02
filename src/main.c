@@ -39,6 +39,13 @@ void scan_matrix(int8_t *arr, int8_t *cnt) {
     scan_matrix_backup(arr, cnt);
 }
 
+void core1_entry() {
+    while (1) {
+        // run tud_task on a different core
+        tud_task();
+    }
+}
+
 /* MAIN FUNCTION */
 int main() {
     // start everything up
@@ -47,12 +54,13 @@ int main() {
 
     sleep_ms(100);
 
-    check_reset() ? reset_usb_boot(0, 0) :0;
+    check_reset() ? reset_usb_boot(0, 0) : 0;
 
+    multicore_launch_core1(core1_entry);
     while (1) {
         // poll the usb
-        tud_task();
-
+        // tud_task();
+        // run tud_task on a different core
         // update the macropad stuff
         update_macropad((macropad_options){
             .get_keycode_function = get_keycode,

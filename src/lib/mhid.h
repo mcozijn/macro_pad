@@ -4,7 +4,9 @@
 #include "bsp/board_api.h"
 #include "tusb.h"
 #include "usb_descriptors.h"
+#include "tllist.h"
 
+typedef tll(uint16_t) encoder_queue_t;
 /* Blink pattern
  * - 250 ms  : device not mounted
  * - 1000 ms : device mounted
@@ -23,7 +25,7 @@ typedef struct hid_report {
 } hid_report;
 
 typedef hid_report (*get_key_fn)(void);
-typedef int32_t (*get_enc_fn)(void);
+typedef encoder_queue_t* (*get_enc_fn)(void);
 typedef void (*set_dpy_fn)(int8_t keycode);
 
 typedef struct macropad_options {

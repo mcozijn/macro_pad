@@ -1,4 +1,5 @@
 #include "mhid.h"
+#include "tllist.h"
 
 static uint32_t blink_interval_ms = BLINK_NOT_MOUNTED;
 
@@ -16,14 +17,14 @@ static void send_hid_report(hid_report report) {
     }
 }
 
-static void send_enc_hid_report(int32_t enc) {
+static void send_enc_hid_report(encoder_queue_t* enc) {
     if (!tud_hid_ready()) return;
 
     static bool has_consumer_key = false;
 
-    if (enc > 0) {
-        uint16_t usage_code = (uint16_t)enc;
-        tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &usage_code, sizeof(usage_code));
+    if (tll_length(*enc) > 0) {
+        uint16_t event = tll_pop_front(*enc);
+        tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &event, sizeof(event));
         has_consumer_key = true;
     } else {
         if (has_consumer_key) tud_hid_report(REPORT_ID_CONSUMER_CONTROL, NULL, 0);
@@ -58,7 +59,7 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id,
 
 void hid_task(macropad_options options) {
     hid_report const report = options.get_keycode_function ? options.get_keycode_function() : (hid_report){0};
-    int32_t const enc = options.get_enc ? options.get_enc() : -1;
+    encoder_queue_t *enc = options.get_enc ? options.get_enc() : &(encoder_queue_t)tll_init();
 
     if (tud_suspended()) {
         tud_remote_wakeup();
