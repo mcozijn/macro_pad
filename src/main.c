@@ -26,7 +26,6 @@ void set_display(int8_t keycode) {
     }
 }
 
-<<<<<<< Updated upstream
 /*
  * MATRIX SCAN CODE (double for loop)
  *
@@ -46,8 +45,6 @@ void core1_entry() {
         tud_task();
     }
 }
-=======
->>>>>>> Stashed changes
 
 /* MAIN FUNCTION */
 int main() {

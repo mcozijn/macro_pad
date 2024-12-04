@@ -7,14 +7,11 @@
 #define DEBOUNCE_DELAY 10
 #define MATRIX_ROWS 4
 #define MATRIX_COLS 3
-<<<<<<< Updated upstream
 #define RESET_BOOTSEL_KEY 2
-=======
 #define MOMENTARY_SIZE 20
 #define KEY 0
 #define MOD 1
 #define CONSUMER 2
->>>>>>> Stashed changes
 
 #define query(key) keymap[key / MATRIX_COLS][key % MATRIX_COLS]
 

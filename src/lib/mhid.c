@@ -31,15 +31,9 @@ static void send_enc_hid_report(encoder_queue_t* enc) {
 
     static bool has_consumer_key = false;
 
-<<<<<<< Updated upstream
     if (tll_length(*enc) > 0) {
         uint16_t event = tll_pop_front(*enc);
         tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &event, sizeof(event));
-=======
-    if (enc > 0 ) {
-        uint16_t usage_code = (uint16_t)enc;
-        tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &usage_code, sizeof(usage_code));
->>>>>>> Stashed changes
         has_consumer_key = true;
     } else {
         if (has_consumer_key) tud_hid_report(REPORT_ID_CONSUMER_CONTROL, NULL, 0);
