@@ -20,8 +20,10 @@ enum {
 
 typedef struct hid_report {
     bool valid;
+    bool consumer;
     uint8_t mod_key;
     uint8_t data[6];
+    uint16_t consumer_key;
 } hid_report;
 
 typedef hid_report (*get_key_fn)(void);

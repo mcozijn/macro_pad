@@ -2,14 +2,16 @@
 
 #include <hardware/clocks.h>
 #include <hardware/pio.h>
-
+#include <pico/stdlib.h>
 #include "qenc.pio.h"
 
+#define DEBOUNCE 50
 static int32_t new_value = 0;
 static int32_t old_value = 0;
 static int32_t delta = 0;
 static PIO pio = pio0;
 
+static uint32_t prev_debounce = 0;
 static volatile bool enc_btn_state = 0;
 
 static inline void quadrature_encoder_program_init(PIO pio, uint sm, uint pin, int max_step_rate) {
@@ -54,10 +56,24 @@ static inline int32_t quadrature_encoder_get_count(PIO pio, uint sm) {
 }
 
 static inline void enc_irq(uint gpio, uint32_t events) {
+    uint32_t start = to_ms_since_boot(get_absolute_time());
+    if (start - prev_debounce < DEBOUNCE){
+        return;  
+    }
+
+    prev_debounce = to_ms_since_boot(get_absolute_time());
+    static bool held = false;
     (void)gpio;
     (void)events;
     uint32_t irq_status = save_and_disable_interrupts();
-    enc_btn_state = (events & GPIO_IRQ_EDGE_FALL) ?: false;
+    if (events & GPIO_IRQ_EDGE_FALL){
+        if(!held){
+            enc_btn_state = true;
+            held = true;
+        }
+    }else if (events & GPIO_IRQ_EDGE_RISE) {
+        held = false;  
+    }
     restore_interrupts(irq_status);
 }
 
@@ -83,7 +99,9 @@ inline int8_t get_enc_pos_diff() {
     }
     return 0;
 }
-
+inline void reset_enc_btn_state(){
+    enc_btn_state = false;
+}
 inline bool get_enc_btn_state() {
     return enc_btn_state;
 }

@@ -40,6 +40,7 @@ static void setup_kb_gpio() {
         gpio_put(row_pins[j], 1);
     }
 }
+<<<<<<< Updated upstream
 
 static inline void scan_matrix_backup(int8_t *arr, int8_t *cnt) {
     for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
@@ -72,6 +73,8 @@ static inline hid_report parse_keys(int8_t keys[2], int8_t cnt) {
     return report;
 }
 
+=======
+>>>>>>> Stashed changes
 static inline void set_display_function(int8_t keycode) {
     if (keycode == -1) return;
 
@@ -85,6 +88,7 @@ static inline void set_display_function(int8_t keycode) {
     }
 }
 
+<<<<<<< Updated upstream
 static inline encoder_queue_t *get_enc() {
     static encoder_queue_t encoder_queue = tll_init();
     int8_t diff = get_enc_pos_diff();
@@ -101,6 +105,8 @@ static inline encoder_queue_t *get_enc() {
     }
     return &encoder_queue;
 }
+=======
+>>>>>>> Stashed changes
 
 static inline void init_keypad() {
     board_init();
@@ -123,34 +129,96 @@ static inline void init_display() {
     display_show(&oled_display);
 }
 
-void scan_matrix(int8_t *arr, int8_t *cnt);
+static inline hid_report parse_keys(int8_t keys[2], int8_t held_keys[2], int8_t cnt) {
+    hid_report report = {.valid = true};
+
+    for (int8_t i = 0; i < cnt; i++) {
+        switch(query(keys[i]).type){
+            case KEY:
+                memcpy(report.data, query(keys[i]).keys, 6);
+                break;
+            case MOD:
+                report.mod_key = query(keys[i]).mod_key;
+                break;
+            case CONSUMER:
+                bool momentary_key_held = false;
+                if (memcmp(keys, held_keys, 2) == 0){
+                    for (int8_t j = 0; j < MOMENTARY_SIZE; j++){
+                        if (query(keys[i]).consumer_key == query(held_keys[i]).consumer_key){
+                            momentary_key_held = true;
+                        }
+                    }
+                }
+                if(!momentary_key_held){
+                    report.consumer_key = query(keys[i]).consumer_key;
+                    report.consumer = true;
+                    report.valid = false;
+                }
+                break;
+        }
+    }
+
+    return report;
+}
+static inline void scan_matrix(int8_t *keys, int8_t *cnt) {
+    for (uint8_t i = 0; i < MATRIX_ROWS; i++) {
+        gpio_put(row_pins[i], 0);
+        sleep_us(1);
+        for (uint8_t j = 0; j < MATRIX_COLS; j++) {
+            if (gpio_get(col_pins[j]) == 0 && *cnt < 2) {
+                keys[*cnt] = (int8_t)(i * MATRIX_COLS + j);
+                (*cnt)++;
+            }
+        }
+        gpio_put(row_pins[i], 1);
+    }
+}
 
 hid_report get_keycode() {
     int8_t keys[2] = {-1};
+<<<<<<< Updated upstream
 
     hid_report report = {.valid = false};
+=======
+    static int8_t held_keys[2] = {-1};
+    hid_report report = {.valid = false, .consumer = false};
+>>>>>>> Stashed changes
     uint32_t start = to_ms_since_boot(get_absolute_time());
 
     while (to_ms_since_boot(get_absolute_time()) - start < DEBOUNCE_DELAY) {
         int8_t current_keys[2] = {-1};
         int8_t cnt = 0;
         scan_matrix(current_keys, &cnt);
-
         if (memcmp(keys, current_keys, 2) != 0 && cnt > 0) {
             memcpy(keys, current_keys, 2);
-            report = parse_keys(keys, cnt);
+            report = parse_keys(keys, held_keys, cnt);
             start = to_ms_since_boot(get_absolute_time());
         }
+        memcpy(held_keys, keys, 2);
     }
 
     return report;
 }
 
+<<<<<<< Updated upstream
 bool check_reset() {
     int8_t arr[2] = {0};
     int8_t cnt = 0;
     scan_matrix(arr, &cnt);
     return arr[0] == RESET_BOOTSEL_KEY || arr[1] == RESET_BOOTSEL_KEY;
+=======
+static inline int32_t get_enc() {
+    int8_t diff = get_enc_pos_diff();
+    if (diff > 0) {
+        return encoder.increment;  // increment
+    } else if (diff < 0) {
+        return encoder.decrement;  // decrement
+    } else if (get_enc_btn_state()) {
+        reset_enc_btn_state();
+        return encoder.button;  // button
+    }
+    return -1;
+>>>>>>> Stashed changes
 }
 
 static inline void update_macropad(macropad_options options) {

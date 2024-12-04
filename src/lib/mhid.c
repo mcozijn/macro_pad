@@ -7,6 +7,7 @@ static void send_hid_report(hid_report report) {
     if (!tud_hid_ready()) return;
 
     static bool has_keyboard_key = false;
+    static bool has_consumer_key = false;
 
     if (report.valid) {
         tud_hid_keyboard_report(REPORT_ID_KEYBOARD, report.mod_key, report.data);
@@ -15,6 +16,14 @@ static void send_hid_report(hid_report report) {
         if (has_keyboard_key) tud_hid_keyboard_report(REPORT_ID_KEYBOARD, 0, NULL);
         has_keyboard_key = false;
     }
+    if (report.consumer) {
+        uint16_t usage_code = (uint16_t)report.consumer_key;
+        tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &usage_code, sizeof(usage_code));
+        has_consumer_key = true;
+    } else {
+        if (has_consumer_key) tud_hid_report(REPORT_ID_CONSUMER_CONTROL, NULL, 0);
+        has_consumer_key = false;
+    }
 }
 
 static void send_enc_hid_report(encoder_queue_t* enc) {
@@ -22,9 +31,15 @@ static void send_enc_hid_report(encoder_queue_t* enc) {
 
     static bool has_consumer_key = false;
 
+<<<<<<< Updated upstream
     if (tll_length(*enc) > 0) {
         uint16_t event = tll_pop_front(*enc);
         tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &event, sizeof(event));
+=======
+    if (enc > 0 ) {
+        uint16_t usage_code = (uint16_t)enc;
+        tud_hid_report(REPORT_ID_CONSUMER_CONTROL, &usage_code, sizeof(usage_code));
+>>>>>>> Stashed changes
         has_consumer_key = true;
     } else {
         if (has_consumer_key) tud_hid_report(REPORT_ID_CONSUMER_CONTROL, NULL, 0);
@@ -56,7 +71,6 @@ void tud_hid_set_report_cb(uint8_t instance, uint8_t report_id,
         }
     }
 }
-
 void hid_task(macropad_options options) {
     hid_report const report = options.get_keycode_function ? options.get_keycode_function() : (hid_report){0};
     encoder_queue_t *enc = options.get_enc ? options.get_enc() : &(encoder_queue_t)tll_init();
